@@ -1,5 +1,5 @@
 /**
- * Zumbido App (Mobile, PWA & iOS fix)
+ * Zumbido App (Filtrado por destinatario y multi-dispositivo)
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -38,6 +38,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
+
+// Identificador único para esta pestaña/dispositivo para evitar auto-zumbidos
+const sessionDeviceId = Math.random().toString(36).substring(7);
 
 let audioContext = null;
 let currentUser = null;
@@ -96,14 +99,14 @@ backBtn.addEventListener('click', () => showSection('contacts-section'));
 pickContactBtn.addEventListener('click', async () => {
     initAudio();
     if (!('contacts' in navigator)) {
-        const n = prompt("Nombre:");
+        const n = prompt("Ingresa el nombre de tu amigo (debe ser su nombre de Google):");
         if (n) addContactToList({ name: [n] });
     } else {
         try {
             const c = await navigator.contacts.select(['name'], { multiple: false });
             if (c.length) addContactToList(c[0]);
         } catch {
-            const n = prompt("Nombre:"); if (n) addContactToList({ name: [n] });
+            const n = prompt("Ingresa el nombre de tu amigo:"); if (n) addContactToList({ name: [n] });
         }
     }
 });
@@ -123,17 +126,40 @@ function addContactToList(contact) {
 async function sendBuzz(to) {
     if (!currentUser) return;
     try {
-        await addDoc(collection(db, "buzzes"), { from: currentUser.displayName, fromId: currentUser.uid, toName: to, timestamp: serverTimestamp(), sound: userPrefs.sound, vibration: userPrefs.vibration });
-        triggerShake();
+        await addDoc(collection(db, "buzzes"), {
+            from: currentUser.displayName,
+            fromId: currentUser.uid,
+            toName: to,
+            deviceId: sessionDeviceId,
+            timestamp: serverTimestamp(),
+            sound: userPrefs.sound,
+            vibration: userPrefs.vibration
+        });
+        triggerShake(); // Feedback visual inmediato para quien envía
     } catch (e) { console.error(e); }
 }
 
 function listenForBuzzes() {
-    const q = query(collection(db, "buzzes"), orderBy("timestamp", "desc"), limit(1));
+    // Filtramos para que SOLO lleguen zumbidos dirigidos a nuestro nombre
+    const q = query(
+        collection(db, "buzzes"),
+        where("toName", "==", currentUser.displayName),
+        orderBy("timestamp", "desc"),
+        limit(1)
+    );
+
     let first = true;
     onSnapshot(q, (snap) => {
         if (first) { first = false; return; }
-        snap.docChanges().forEach(change => { if (change.type === "added") onBuzzReceived(change.doc.data()); });
+        snap.docChanges().forEach(change => {
+            if (change.type === "added") {
+                const data = change.doc.data();
+                // Solo reaccionamos si NO lo enviamos nosotros desde este mismo dispositivo
+                if (data.deviceId !== sessionDeviceId) {
+                    onBuzzReceived(data);
+                }
+            }
+        });
     });
 }
 
