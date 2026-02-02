@@ -1,10 +1,29 @@
 /**
- * Zumbido App - Neo MSN Edition (Multi-device & iOS fix)
+ * Zumbido App - Neo MSN Edition (Ultimate Mobile & Redirect Fix)
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    getRedirectResult,
+    onAuthStateChanged,
+    signOut
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    onSnapshot,
+    collection,
+    addDoc,
+    serverTimestamp,
+    query,
+    where,
+    limit,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAl_jrOOxnMuBpWGRB_dxdvao39GMhlV-Y",
@@ -57,16 +76,30 @@ const showSection = (sectionId) => {
 
 // Unlock Audio for iOS
 function initAudio() {
-    if (!audioContext) {
+    if (!audioContext || audioContext.state === 'suspended') {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const buffer = audioContext.createBuffer(1, 1, 22050);
         const source = audioContext.createBufferSource();
         source.buffer = buffer;
         source.connect(audioContext.destination);
         source.start(0);
-        console.log("Audio Context initialized");
+        console.log("Audio Context initialized/unlocked");
     }
 }
+
+// Handle Redirect Result (Crucial for mobile)
+getRedirectResult(auth)
+    .then((result) => {
+        if (result?.user) {
+            console.log("Login exitoso vía redirect:", result.user.displayName);
+        }
+    })
+    .catch((error) => {
+        console.error("Error en redirect:", error);
+        if (error.code === 'auth/credential-already-in-use') {
+            alert("Esta cuenta ya está en uso.");
+        }
+    });
 
 // Auth Observer
 onAuthStateChanged(auth, async (user) => {
@@ -98,25 +131,23 @@ async function syncUser() {
 }
 
 // Event Listeners
-loginBtn.addEventListener('click', async () => {
+loginBtn.addEventListener('click', () => {
     initAudio();
     if (window.location.protocol === 'file:') {
         alert("¡Error! Debes usar un servidor web (http://localhost:8000).");
         return;
     }
-    try {
-        await signInWithPopup(auth, provider);
-    } catch (e) {
-        console.error(e);
-        alert("Error de login. Revisa la consola.");
-    }
+    console.log("Iniciando login con redirect...");
+    signInWithRedirect(auth, provider);
 });
 
 logoutBtn.addEventListener('click', () => signOut(auth));
+
 settingsBtn.addEventListener('click', () => {
     initAudio();
     showSection('settings-section');
 });
+
 backBtn.addEventListener('click', () => showSection('contacts-section'));
 
 pickContactBtn.addEventListener('click', async () => {
@@ -174,7 +205,6 @@ async function sendBuzz(toName) {
 }
 
 function listenForBuzzes() {
-    // Listen for buzzes created after the current moment
     const q = query(collection(db, "buzzes"), orderBy("timestamp", "desc"), limit(1));
     let firstLoad = true;
 
@@ -186,7 +216,6 @@ function listenForBuzzes() {
         snap.docChanges().forEach(change => {
             if (change.type === "added") {
                 const data = change.doc.data();
-                // We play it even if it's from us for testing purposes
                 onBuzzReceived(data);
             }
         });
@@ -220,6 +249,7 @@ function triggerShake() {
 
 function playMsnSound(type) {
     if (!audioContext) return;
+    if (audioContext.state === 'suspended') audioContext.resume();
 
     const osc = audioContext.createOscillator();
     const gain = audioContext.createGain();
