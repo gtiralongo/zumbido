@@ -1,5 +1,5 @@
 /**
- * Zumbido App (Directorio Real y Filtrado Robusto)
+ * Zumbido App - Versión Final con Directorio Global
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -39,13 +39,13 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Identificador único para esta pestaña/dispositivo para evitar auto-zumbidos
 const sessionDeviceId = Math.random().toString(36).substring(7);
-
 let audioContext = null;
 let currentUser = null;
 let userPrefs = { sound: 'classic', vibration: true };
 
+// Elementos del DOM
+const appContainer = document.getElementById('app');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const settingsBtn = document.getElementById('settings-btn');
@@ -56,10 +56,15 @@ const soundSelect = document.getElementById('sound-select');
 const userDisplayName = document.getElementById('user-display-name');
 const userAvatar = document.getElementById('user-avatar');
 const userStatusText = document.getElementById('user-status-text');
+const contactsList = document.getElementById('contacts-list');
 
 const showSection = (id) => {
-    ['auth-section', 'contacts-section', 'settings-section'].forEach(s => document.getElementById(s).classList.add('hidden'));
-    document.getElementById(id).classList.remove('hidden');
+    ['auth-section', 'contacts-section', 'settings-section'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.add('hidden');
+    });
+    const target = document.getElementById(id);
+    if (target) target.classList.remove('hidden');
 };
 
 function initAudio() {
@@ -71,6 +76,7 @@ function initAudio() {
     }
 }
 
+// Manejar redirección
 getRedirectResult(auth).catch(console.error);
 
 onAuthStateChanged(auth, async (user) => {
@@ -80,7 +86,6 @@ onAuthStateChanged(auth, async (user) => {
         userAvatar.src = user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`;
         userStatusText.innerText = "Disponible";
 
-        // Guardar usuario en el directorio global
         await setDoc(doc(db, "users", user.uid), {
             uid: user.uid,
             displayName: user.displayName,
@@ -89,7 +94,7 @@ onAuthStateChanged(auth, async (user) => {
         }, { merge: true });
 
         listenForBuzzes();
-        listenForUsers(); // Cargar directorio real de usuarios
+        listenForUsers(); // Cargar directorio de usuarios
         showSection('contacts-section');
     } else {
         currentUser = null;
@@ -107,69 +112,63 @@ backBtn.addEventListener('click', () => showSection('contacts-section'));
 
 pickContactBtn.addEventListener('click', async () => {
     initAudio();
-    if (!('contacts' in navigator)) {
-        const n = prompt("Busca a alguien manualmente por nombre:");
-        if (n) addContactToList({ name: [n] }, true);
-    } else {
-        try {
-            const c = await navigator.contacts.select(['name'], { multiple: false });
-            if (c.length) addContactToList(c[0], true);
-        } catch {
-            const n = prompt("Nombre:"); if (n) addContactToList({ name: [n] }, true);
-        }
-    }
+    const n = prompt("Ingresa el nombre de usuario de tu amigo:");
+    if (n) addContactToList({ name: [n] }, true);
 });
 
-// Directorio Real de Usuarios conectados
+// Directorio en tiempo real
 function listenForUsers() {
-    const q = query(collection(db, "users"), limit(20));
+    const q = query(collection(db, "users"), limit(50));
     onSnapshot(q, (snap) => {
-        const list = document.getElementById('contacts-list');
-        // Limpiamos la lista solo de los usuarios reales (clase real-user)
-        const realUsers = list.querySelectorAll('.real-user');
-        realUsers.forEach(u => u.remove());
+        contactsList.innerHTML = ''; // Limpiamos la lista para reconstruirla
+
+        if (snap.empty) {
+            contactsList.innerHTML = '<p class="empty-msg" style="text-align:center; color:var(--text-secondary); padding:20px;">No hay usuarios conectados aún.</p>';
+            return;
+        }
 
         snap.forEach(doc => {
             const userData = doc.data();
-            // No nos mostramos a nosotros mismos en la lista de "Otros"
-            if (userData.uid !== currentUser.uid) {
-                addContactToList({
-                    name: [userData.displayName],
-                    photo: userData.photoURL
-                }, false, true);
-            }
+            const isMe = userData.uid === currentUser.uid;
+            addContactToList({
+                name: [userData.displayName + (isMe ? ' (Tú)' : '')],
+                photo: userData.photoURL,
+                realName: userData.displayName
+            }, false);
         });
     });
 }
 
-function addContactToList(contact, isManual = false, isFromFirestore = false) {
-    const list = document.getElementById('contacts-list');
-    const empty = list.querySelector('.empty-msg');
-    if (empty) empty.remove();
-
+function addContactToList(contact, isManual = false) {
     const name = contact.name ? contact.name[0] : "Sin nombre";
+    const realName = contact.realName || name;
 
-    // Evitar duplicados si ya existe por nombre
-    if (isFromFirestore) {
-        const existing = Array.from(list.querySelectorAll('.contact-name')).find(el => el.innerText === name);
-        if (existing) return;
+    // Evitar duplicados visuales si es manual y ya está en la lista de firestore
+    if (isManual) {
+        const items = Array.from(contactsList.querySelectorAll('.contact-name'));
+        if (items.some(i => i.innerText.includes(realName))) return;
     }
 
     const el = document.createElement('div');
-    el.className = 'contact-item' + (isFromFirestore ? ' real-user' : '');
+    el.className = 'contact-item';
+    el.style.animation = 'slideDown 0.3s ease-out';
     el.innerHTML = `
-        <img src="${contact.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + name}" style="width:30px; height:30px; border-radius:8px;">
-        <span class="contact-name" style="flex:1;">${name}</span>
-        <button class="buzz-btn-icon" title="¡Zumbido!">🔔</button>
+        <div style="position:relative;">
+            <img src="${contact.photo || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + realName}" 
+                 style="width:40px; height:40px; border-radius:12px; background:#fff; border:1px solid #eee;">
+            <div class="status-badge" style="position:absolute; bottom:-2px; right:-2px; width:12px; height:12px; border:2px solid #fff;"></div>
+        </div>
+        <span class="contact-name" style="flex:1; font-weight:500; font-size:15px; margin-left:12px;">${name}</span>
+        <button class="buzz-btn-icon" style="background:var(--msn-blue-light); border:none; padding:8px; border-radius:8px; cursor:pointer; font-size:18px;">🔔</button>
     `;
 
     el.querySelector('.buzz-btn-icon').addEventListener('click', (e) => {
         e.stopPropagation();
         initAudio();
-        sendBuzz(name);
+        sendBuzz(realName);
     });
 
-    list.appendChild(el);
+    contactsList.appendChild(el);
 }
 
 async function sendBuzz(to) {
@@ -189,24 +188,21 @@ async function sendBuzz(to) {
 }
 
 function listenForBuzzes() {
-    // ELIMINAMOS orderBy PARA EVITAR ERROR DE INDICES EN FIREBASE
-    // Filtramos solo por nombre
     const q = query(
         collection(db, "buzzes"),
         where("toName", "==", currentUser.displayName),
         limit(5)
     );
 
-    let startTime = Date.now();
+    let appStartTime = Date.now();
     onSnapshot(q, (snap) => {
         snap.docChanges().forEach(change => {
             if (change.type === "added") {
                 const data = change.doc.data();
-
-                // Solo procesar si el zumbido es NUEVO (creado después de abrir la app)
-                // y no fue enviado por este mismo dispositivo
                 const buzzTime = data.timestamp?.toMillis() || Date.now();
-                if (buzzTime > startTime - 5000 && data.deviceId !== sessionDeviceId) {
+
+                // Solo si es nuevo y de otro dispositivo
+                if (buzzTime > appStartTime - 10000 && data.deviceId !== sessionDeviceId) {
                     onBuzzReceived(data);
                 }
             }
@@ -216,32 +212,59 @@ function listenForBuzzes() {
 
 function onBuzzReceived(data) {
     triggerShake();
-    if (audioContext) {
-        if (audioContext.state === 'suspended') audioContext.resume();
-        const o = audioContext.createOscillator(); const g = audioContext.createGain();
-        o.connect(g); g.connect(audioContext.destination);
-        let f = 880; if (data.sound === 'alert') f = 1200; if (data.sound === 'magic') f = 1500; if (data.sound === 'echo') f = 440;
-        o.type = 'sine'; o.frequency.setValueAtTime(f, audioContext.currentTime);
-        o.frequency.exponentialRampToValueAtTime(f / 2, audioContext.currentTime + 0.4);
-        g.gain.setValueAtTime(0.1, audioContext.currentTime); g.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
-        o.start(); o.stop(audioContext.currentTime + 0.5);
-    }
+    playMsnSound(data.sound);
+
     if (data.vibration && navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 400]);
-    const n = document.createElement('div'); n.className = 'buzz-notification';
-    n.innerHTML = `<div class="notif-content"><strong>${data.from}</strong><span>¡Te ha enviado un zumbido!</span></div>`;
+
+    const n = document.createElement('div');
+    n.className = 'buzz-notification';
+    n.innerHTML = `
+        <div class="notif-content">
+            <strong>${data.from}</strong>
+            <span>¡Te ha enviado un zumbido!</span>
+        </div>
+    `;
     document.body.appendChild(n);
-    setTimeout(() => { n.style.opacity = '0'; setTimeout(() => n.remove(), 500); }, 4000);
+    setTimeout(() => {
+        n.style.opacity = '0';
+        setTimeout(() => n.remove(), 500);
+    }, 4000);
+}
+
+function playMsnSound(type) {
+    if (!audioContext) return;
+    if (audioContext.state === 'suspended') audioContext.resume();
+
+    const o = audioContext.createOscillator();
+    const g = audioContext.createGain();
+    o.connect(g);
+    g.connect(audioContext.destination);
+
+    let f = 880;
+    if (type === 'alert') f = 1200;
+    if (type === 'magic') f = 1500;
+    if (type === 'echo') f = 440;
+
+    o.type = 'sine';
+    o.frequency.setValueAtTime(f, audioContext.currentTime);
+    o.frequency.exponentialRampToValueAtTime(f / 2, audioContext.currentTime + 0.4);
+
+    g.gain.setValueAtTime(0.1, audioContext.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+
+    o.start();
+    o.stop(audioContext.currentTime + 0.5);
 }
 
 function triggerShake() {
-    document.getElementById('app').classList.add('shake');
-    setTimeout(() => document.getElementById('app').classList.remove('shake'), 500);
+    appContainer.classList.add('shake');
+    setTimeout(() => appContainer.classList.remove('shake'), 500);
 }
 
 vibrationToggle.addEventListener('change', (e) => userPrefs.vibration = e.target.checked);
 soundSelect.addEventListener('change', (e) => userPrefs.sound = e.target.value);
 
-// PWA Registration
+// PWA e iOS
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(console.error);
