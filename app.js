@@ -7,7 +7,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signO
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, serverTimestamp, query, where, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAl_jrOOxnMuBpWGRB_dxdvao39GMhlV-Y",
+    apiKey: APIKEY,
     authDomain: "studio-1888292451-fc60d.firebaseapp.com",
     projectId: "studio-1888292451-fc60d",
     storageBucket: "studio-1888292451-fc60d.firebasestorage.app",
