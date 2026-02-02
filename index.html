@@ -1,69 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zumbido - Mandá un aviso!</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Zumbido - Neo MSN</title>
+    <!-- Modern Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div id="app">
         <header>
-            <h1>Zumbido</h1>
-            <button id="settings-btn" class="icon-btn">⚙️</button>
+            <div class="header-top">
+                <div class="user-profile">
+                    <div class="avatar-wrapper">
+                        <img id="user-avatar" class="avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=MSN"
+                            alt="Avatar">
+                        <div class="status-badge" id="status-badge"></div>
+                    </div>
+                    <div class="user-text">
+                        <h1 id="user-display-name">Zumbido</h1>
+                        <p class="user-status" id="user-status-text">Inicia sesión para conectar</p>
+                    </div>
+                </div>
+                <button id="settings-btn" class="icon-btn" title="Opciones">⚙️</button>
+            </div>
         </header>
 
         <main>
             <section id="auth-section" class="card">
                 <h2>Bienvenido</h2>
-                <p>Ingresa para empezar a mandar zumbidos.</p>
-                <button id="login-btn" class="btn primary">Ingresar con Google</button>
+                <div style="text-align: center; padding: 20px 0;">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/MSN_Messenger_logo_2004-2009.png"
+                        style="width: 80px; filter: drop-shadow(0 5px 15px rgba(0,137,255,0.2));">
+                </div>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Envía zumbidos a tus
+                    amigos como en los viejos tiempos.</p>
+                <button id="login-btn" class="btn primary">
+                    <span>Ingresar con Google</span>
+                </button>
             </section>
 
             <section id="contacts-section" class="card hidden">
-                <div class="section-header">
-                    <h2>Tus Contactos</h2>
-                    <button id="pick-contact-btn" class="btn secondary">+ Elegir Contacto</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h2>Tus Amigos</h2>
+                    <button id="pick-contact-btn" class="btn secondary" style="padding: 6px 12px; font-size: 13px;">+
+                        Agregar</button>
                 </div>
                 <div id="contacts-list" class="list-container">
-                    <!-- Los contactos aparecerán aquí -->
-                    <p class="empty-msg">No has agregado contactos aún.</p>
+                    <p class="empty-msg"
+                        style="text-align: center; color: var(--text-secondary); margin-top: 40px; font-size: 14px;">
+                        Busca amigos para empezar a zumbar.</p>
                 </div>
             </section>
 
             <section id="settings-section" class="card hidden">
-                <div class="section-header">
-                    <button id="back-btn" class="icon-btn">←</button>
-                    <h2>Preferencias</h2>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                    <button id="back-btn" class="icon-btn">🔙</button>
+                    <h2 style="margin: 0;">Ajustes de Alerta</h2>
                 </div>
+
                 <div class="setting-item">
-                    <label for="sound-select">Sonido de Zumbido</label>
+                    <span>Efecto de Sonido:</span>
                     <select id="sound-select">
-                        <option value="classic">Clásico</option>
-                        <option value="alert">Alerta</option>
-                        <option value="magic">Mágico</option>
-                        <option value="echo">Echo</option>
+                        <option value="classic">Clásico (Pling)</option>
+                        <option value="alert">Alerta (Buzz)</option>
+                        <option value="magic">Mágico (Chime)</option>
+                        <option value="echo">Pulso (Echo)</option>
                     </select>
                 </div>
+
                 <div class="setting-item">
-                    <label>Vibración</label>
-                    <div class="toggle-container">
-                        <span>Activada</span>
-                        <input type="checkbox" id="vibration-toggle" checked>
-                    </div>
+                    <span>Vibración:</span>
+                    <input type="checkbox" id="vibration-toggle" checked>
+                </div>
+
+                <div style="margin-top: auto; padding-top: 40px;">
+                    <button id="logout-btn" class="btn secondary" style="width: 100%; color: #ff4d4d;">Cerrar
+                        sesión</button>
                 </div>
             </section>
         </main>
 
         <footer>
-            <p>&copy; 2026 Zumbido App</p>
+            <span>Zumbido App • Neo MSN Edition</span>
         </footer>
     </div>
 
-    <!-- Firebase Scripts (Vía CDN) -->
     <script type="module" src="app.js"></script>
 </body>
+
 </html>
