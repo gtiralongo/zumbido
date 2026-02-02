@@ -1,5 +1,5 @@
 /**
- * Zumbido App - MSN Edition
+ * Zumbido App - Neo MSN Edition (Multi-device & iOS fix)
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -15,12 +15,16 @@ const firebaseConfig = {
     appId: "1:873003768289:web:5e3d7a85ebaea725469aa0"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// DOM
+// Audio Context for iOS
+let audioContext = null;
+
+// DOM Elements
 const appContainer = document.getElementById('app');
 const authSection = document.getElementById('auth-section');
 const contactsSection = document.getElementById('contacts-section');
@@ -45,12 +49,26 @@ let userPrefs = {
     vibration: true
 };
 
+// Navigation
 const showSection = (sectionId) => {
     [authSection, contactsSection, settingsSection].forEach(s => s.classList.add('hidden'));
     document.getElementById(sectionId).classList.remove('hidden');
 };
 
-// Auth
+// Unlock Audio for iOS
+function initAudio() {
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const buffer = audioContext.createBuffer(1, 1, 22050);
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+        console.log("Audio Context initialized");
+    }
+}
+
+// Auth Observer
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
@@ -79,7 +97,9 @@ async function syncUser() {
     }, { merge: true });
 }
 
+// Event Listeners
 loginBtn.addEventListener('click', async () => {
+    initAudio();
     if (window.location.protocol === 'file:') {
         alert("¡Error! Debes usar un servidor web (http://localhost:8000).");
         return;
@@ -93,19 +113,26 @@ loginBtn.addEventListener('click', async () => {
 });
 
 logoutBtn.addEventListener('click', () => signOut(auth));
-settingsBtn.addEventListener('click', () => showSection('settings-section'));
+settingsBtn.addEventListener('click', () => {
+    initAudio();
+    showSection('settings-section');
+});
 backBtn.addEventListener('click', () => showSection('contacts-section'));
 
 pickContactBtn.addEventListener('click', async () => {
+    initAudio();
     if (!('contacts' in navigator)) {
-        const name = prompt("Nombre del contacto:");
+        const name = prompt("Nombre del contacto para zumbar:");
         if (name) addContactToList({ name: [name] });
         return;
     }
     try {
         const contacts = await navigator.contacts.select(['name'], { multiple: false });
         if (contacts.length) addContactToList(contacts[0]);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        const name = prompt("Nombre del contacto:");
+        if (name) addContactToList({ name: [name] });
+    }
 });
 
 function addContactToList(contact) {
@@ -117,13 +144,14 @@ function addContactToList(contact) {
     const el = document.createElement('div');
     el.className = 'contact-item';
     el.innerHTML = `
-        <div class="status-dot"></div>
+        <div class="status-badge" style="position:static; width:12px; height:12px; border:none;"></div>
         <span class="contact-name">${name}</span>
-        <button class="buzz-btn-icon" title="¡Enviar Zumbido!"></button>
+        <button class="buzz-btn-icon" title="¡Enviar Zumbido!">🔔</button>
     `;
 
     el.querySelector('.buzz-btn-icon').addEventListener('click', (e) => {
         e.stopPropagation();
+        initAudio();
         sendBuzz(name);
     });
 
@@ -131,6 +159,7 @@ function addContactToList(contact) {
 }
 
 async function sendBuzz(toName) {
+    if (!currentUser) return;
     try {
         await addDoc(collection(db, "buzzes"), {
             from: currentUser.displayName,
@@ -140,22 +169,25 @@ async function sendBuzz(toName) {
             sound: userPrefs.sound,
             vibration: userPrefs.vibration
         });
-        // Visual feedback
         triggerShake();
     } catch (e) { console.error(e); }
 }
 
 function listenForBuzzes() {
+    // Listen for buzzes created after the current moment
     const q = query(collection(db, "buzzes"), orderBy("timestamp", "desc"), limit(1));
-    let first = true;
+    let firstLoad = true;
+
     onSnapshot(q, (snap) => {
-        if (first) { first = false; return; }
+        if (firstLoad) {
+            firstLoad = false;
+            return;
+        }
         snap.docChanges().forEach(change => {
             if (change.type === "added") {
                 const data = change.doc.data();
-                if (data.fromId !== currentUser.uid) {
-                    onBuzzReceived(data);
-                }
+                // We play it even if it's from us for testing purposes
+                onBuzzReceived(data);
             }
         });
     });
@@ -169,14 +201,16 @@ function onBuzzReceived(data) {
     const n = document.createElement('div');
     n.className = 'buzz-notification';
     n.innerHTML = `
-        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${data.from}" style="width:30px; border-radius:3px;">
         <div class="notif-content">
             <strong>${data.from}</strong>
-            <span>te ha enviado un zumbido.</span>
+            <span>¡Te ha enviado un zumbido!</span>
         </div>
     `;
     document.body.appendChild(n);
-    setTimeout(() => n.remove(), 5000);
+    setTimeout(() => {
+        n.style.opacity = '0';
+        setTimeout(() => n.remove(), 500);
+    }, 4000);
 }
 
 function triggerShake() {
@@ -185,22 +219,27 @@ function triggerShake() {
 }
 
 function playMsnSound(type) {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    if (!audioContext) return;
+
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
     osc.connect(gain);
-    gain.connect(ctx.destination);
+    gain.connect(audioContext.destination);
 
-    // Simple synthesis for that "ding" feeling
+    let freq = 880;
+    if (type === 'alert') freq = 1200;
+    if (type === 'magic') freq = 1500;
+    if (type === 'echo') freq = 440;
+
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.5);
+    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq / 2, audioContext.currentTime + 0.4);
 
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
 
     osc.start();
-    osc.stop(ctx.currentTime + 0.6);
+    osc.stop(audioContext.currentTime + 0.5);
 }
 
 vibrationToggle.addEventListener('change', (e) => userPrefs.vibration = e.target.checked);
