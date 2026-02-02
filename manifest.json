@@ -1,0 +1,15 @@
+{
+  "short_name": "Zumbido",
+  "name": "Zumbido",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/avataaars/svg?seed=Zumbido",
+      "type": "image/svg+xml",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0089ff",
+  "background_color": "#ffffff"
+}
