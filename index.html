@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zumbido - Mandá un aviso!</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Zumbido</h1>
+            <button id="settings-btn" class="icon-btn">⚙️</button>
+        </header>
+
+        <main>
+            <section id="auth-section" class="card">
+                <h2>Bienvenido</h2>
+                <p>Ingresa para empezar a mandar zumbidos.</p>
+                <button id="login-btn" class="btn primary">Ingresar con Google</button>
+            </section>
+
+            <section id="contacts-section" class="card hidden">
+                <div class="section-header">
+                    <h2>Tus Contactos</h2>
+                    <button id="pick-contact-btn" class="btn secondary">+ Elegir Contacto</button>
+                </div>
+                <div id="contacts-list" class="list-container">
+                    <!-- Los contactos aparecerán aquí -->
+                    <p class="empty-msg">No has agregado contactos aún.</p>
+                </div>
+            </section>
+
+            <section id="settings-section" class="card hidden">
+                <div class="section-header">
+                    <button id="back-btn" class="icon-btn">←</button>
+                    <h2>Preferencias</h2>
+                </div>
+                <div class="setting-item">
+                    <label for="sound-select">Sonido de Zumbido</label>
+                    <select id="sound-select">
+                        <option value="classic">Clásico</option>
+                        <option value="alert">Alerta</option>
+                        <option value="magic">Mágico</option>
+                        <option value="echo">Echo</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Vibración</label>
+                    <div class="toggle-container">
+                        <span>Activada</span>
+                        <input type="checkbox" id="vibration-toggle" checked>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Zumbido App</p>
+        </footer>
+    </div>
+
+    <!-- Firebase Scripts (Vía CDN) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
