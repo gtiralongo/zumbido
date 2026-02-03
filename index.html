@@ -321,27 +321,34 @@
             }
 
             function listenForBuzzes(db, user) {
+                logger("Escuchando zumbidos para: " + user.displayName);
+
+                // Quitamos el orderBy para evitar la necesidad de crear un índice manual en Firebase
                 const q = query(
                     collection(db, "buzzes"),
-                    where("toName", "==", user.displayName),
-                    orderBy("timestamp", "desc"),
-                    limit(1)
+                    where("toName", "==", user.displayName)
                 );
 
-                let firstLoad = true;
+                let appStartTime = Date.now();
+
                 onSnapshot(q, (snap) => {
-                    if (firstLoad) { firstLoad = false; return; }
                     snap.docChanges().forEach(change => {
                         if (change.type === "added") {
                             const data = change.doc.data();
-                            // No reaccionar si lo enviamos nosotros en esta misma pestaña
-                            if (data.deviceId !== sessionDeviceId) {
+
+                            // Solo procesamos si el zumbido es NUEVO (creado después de abrir la app)
+                            // y si no viene de este mismo dispositivo
+                            const buzzTime = data.timestamp ? data.timestamp.toMillis() : Date.now();
+
+                            if (buzzTime > appStartTime - 10000 && data.deviceId !== sessionDeviceId) {
                                 logger("¡ZUMBIDO DE " + data.from + "!");
                                 triggerShake();
                                 playSound();
                             }
                         }
                     });
+                }, (error) => {
+                    logger("ERROR EN LISTENER: " + error.message);
                 });
             }
 
