@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zumbido 2.0</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0089ff">
     <style>
         :root {
             --msn-blue: #0089ff;
@@ -344,6 +346,7 @@
                                 logger("¡ZUMBIDO DE " + data.from + "!");
                                 triggerShake();
                                 playSound();
+                                showBrowserNotification(data.from);
                             }
                         }
                     });
@@ -375,8 +378,34 @@
                 osc.stop(audioCtx.currentTime + 0.3);
             }
 
+            // PWA y Notificaciones
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then(() => logger("Service Worker registrado."))
+                        .catch(err => logger("Error SW: " + err.message));
+                });
+            }
+
+            if ("Notification" in window) {
+                if (Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            }
+
+            // ... (resto del código existente)
+
         } catch (e) {
             logger("ERROR CRÍTICO: " + e.message);
+        }
+
+        function showBrowserNotification(from) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("¡ZUMBIDO!", {
+                    body: from + " te ha enviado un zumbido",
+                    icon: "https://api.dicebear.com/7.x/avataaars/svg?seed=Zumbido"
+                });
+            }
         }
     </script>
 </body>
