@@ -4,98 +4,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zumbido</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0089ff">
-    <link rel="apple-touch-icon" href="https://api.dicebear.com/7.x/avataaars/svg?seed=Zumbido">
+    <title>Zumbido 2.0</title>
+    <style>
+        :root {
+            --msn-blue: #0089ff;
+            --bg: #f5f5f5;
+        }
 
-    <!-- Modern Font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+        body {
+            font-family: sans-serif;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #app {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .btn {
+            background: var(--msn-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        #log {
+            font-size: 11px;
+            color: #888;
+            text-align: left;
+            margin-top: 1rem;
+            max-height: 100px;
+            overflow-y: auto;
+            background: #eee;
+            padding: 5px;
+        }
+    </style>
 </head>
 
 <body>
     <div id="app">
-        <header>
-            <div class="header-top">
-                <div class="user-profile">
-                    <div class="avatar-wrapper">
-                        <img id="user-avatar" class="avatar"
-                            src="https://api.dicebear.com/7.x/avataaars/svg?seed=Zumbido" alt="Avatar">
-                        <div class="status-badge" id="status-badge"></div>
-                    </div>
-                    <div class="user-text">
-                        <h1 id="user-display-name">Zumbido</h1>
-                        <p class="user-status" id="user-status-text">Inicia sesión para conectar</p>
-                    </div>
-                </div>
-                <button id="settings-btn" class="icon-btn" title="Opciones">⚙️</button>
+        <h1 id="title">Zumbido</h1>
+
+        <div id="auth-section">
+            <p>Conecta para empezar a zumbar.</p>
+            <button id="login-btn" class="btn">Ingresar con Google</button>
+        </div>
+
+        <div id="main-section" class="hidden">
+            <div class="user-info">
+                <img id="user-photo" class="avatar">
+                <span id="user-name"></span>
             </div>
-        </header>
+            <p>¡App activa! Prueba a enviarte un zumbido.</p>
+            <button id="buzz-btn" class="btn">¡Enviar Zumbido (Prueba)!</button>
+            <button id="logout-btn"
+                style="margin-top:20px; background:none; border:none; color:red; cursor:pointer;">Cerrar sesión</button>
+        </div>
 
-        <main>
-            <section id="auth-section" class="card">
-                <h2>Bienvenido</h2>
-                <div style="text-align: center; padding: 20px 0;">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/MSN_Messenger_logo_2004-2009.png"
-                        style="width: 80px; filter: drop-shadow(0 5px 15px rgba(0,137,255,0.2));">
-                </div>
-                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 20px;">Envía zumbidos a tus
-                    amigos al instante.</p>
-                <button id="login-btn" class="btn primary">
-                    <span>Ingresar con Google</span>
-                </button>
-            </section>
-
-            <section id="contacts-section" class="card hidden">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <h2>Tus Amigos</h2>
-                    <button id="pick-contact-btn" class="btn secondary" style="padding: 6px 12px; font-size: 13px;">+
-                        Agregar</button>
-                </div>
-                <div id="contacts-list" class="list-container">
-                    <p class="empty-msg"
-                        style="text-align: center; color: var(--text-secondary); margin-top: 40px; font-size: 14px;">
-                        Busca amigos para empezar a zumbar.</p>
-                </div>
-            </section>
-
-            <section id="settings-section" class="card hidden">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                    <button id="back-btn" class="icon-btn">🔙</button>
-                    <h2 style="margin: 0;">Ajustes de Alerta</h2>
-                </div>
-
-                <div class="setting-item">
-                    <span>Efecto de Sonido:</span>
-                    <select id="sound-select">
-                        <option value="classic">Clásico (Pling)</option>
-                        <option value="alert">Alerta (Buzz)</option>
-                        <option value="magic">Mágico (Chime)</option>
-                        <option value="echo">Pulso (Echo)</option>
-                    </select>
-                </div>
-
-                <div class="setting-item">
-                    <span>Vibración:</span>
-                    <input type="checkbox" id="vibration-toggle" checked>
-                </div>
-
-                <div style="margin-top: auto; padding-top: 40px;">
-                    <button id="logout-btn" class="btn secondary" style="width: 100%; color: #ff4d4d;">Cerrar
-                        sesión</button>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <span>Zumbido App</span>
-        </footer>
+        <div id="log">Logs del sistema inicializados...</div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, where, onSnapshot, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAl_jrOOxnMuBpWGRB_dxdvao39GMhlV-Y",
+            authDomain: "studio-1888292451-fc60d.firebaseapp.com",
+            projectId: "studio-1888292451-fc60d",
+            storageBucket: "studio-1888292451-fc60d.firebasestorage.app",
+            messagingSenderId: "873003768289",
+            appId: "1:873003768289:web:5e3d7a85ebaea725469aa0"
+        };
+
+        const logger = (msg) => {
+            const logEl = document.getElementById('log');
+            logEl.innerHTML += `<div>> ${msg}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+            console.log(msg);
+        };
+
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            logger("Firebase inicializado correctamente.");
+
+            const authSection = document.getElementById('auth-section');
+            const mainSection = document.getElementById('main-section');
+            const userName = document.getElementById('user-name');
+            const userPhoto = document.getElementById('user-photo');
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    logger("Usuario autenticado: " + user.displayName);
+                    userName.innerText = user.displayName;
+                    userPhoto.src = user.photoURL;
+                    authSection.classList.add('hidden');
+                    mainSection.classList.remove('hidden');
+                    listenForBuzzes(user, db);
+                } else {
+                    logger("No hay sesión activa.");
+                    authSection.classList.remove('hidden');
+                    mainSection.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('login-btn').addEventListener('click', () => {
+                logger("Iniciando login...");
+                signInWithPopup(auth, provider)
+                    .then(() => logger("Login exitoso."))
+                    .catch(err => logger("ERROR LOGIN: " + err.code));
+            });
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                signOut(auth).then(() => logger("Sesión cerrada."));
+            });
+
+            document.getElementById('buzz-btn').addEventListener('click', async () => {
+                const user = auth.currentUser;
+                if (!user) return;
+                logger("Enviando zumbido...");
+                try {
+                    await addDoc(collection(db, "buzzes"), {
+                        toName: user.displayName,
+                        from: user.displayName,
+                        timestamp: serverTimestamp(),
+                        deviceId: "tester"
+                    });
+                    logger("Zumbido guardado en Firestore.");
+                } catch (e) {
+                    logger("ERROR BUZZ: " + e.message);
+                }
+            });
+
+        } catch (e) {
+            logger("ERROR CRÍTICO: " + e.message);
+        }
+
+        function listenForBuzzes(user, db) {
+            logger("Escuchando zumbidos para: " + user.displayName);
+            const q = query(
+                collection(db, "buzzes"),
+                where("toName", "==", user.displayName),
+                orderBy("timestamp", "desc"),
+                limit(1)
+            );
+
+            let firstLoad = true;
+            onSnapshot(q, (snap) => {
+                if (firstLoad) { firstLoad = false; return; }
+                snap.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        logger("¡ZUMBIDO RECIBIDO!");
+                        document.body.style.background = "red";
+                        setTimeout(() => document.body.style.background = "#f5f5f5", 500);
+                        if (navigator.vibrate) navigator.vibrate(500);
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
