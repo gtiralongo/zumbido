@@ -12,497 +12,207 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <style>
         :root {
-            --primary: #6366F1;
-            --primary-hover: #4F46E5;
-            --primary-light: #EEF2FF;
+            --primary: #6366F1; --primary-hover: #4F46E5; --primary-light: #EEF2FF;
             --primary-ring: rgba(99,102,241,0.3);
-            --bg: #F8FAFC;
-            --surface: #FFFFFF;
-            --surface-hover: #F1F5F9;
-            --border: #E2E8F0;
-            --text: #0F172A;
-            --text-secondary: #64748B;
-            --text-muted: #94A3B8;
-            --success: #22C55E;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --online: #22C55E;
-            --offline: #94A3B8;
+            --bg: #F8FAFC; --surface: #FFF; --surface-hover: #F1F5F9; --border: #E2E8F0;
+            --text: #0F172A; --text-secondary: #64748B; --text-muted: #94A3B8;
+            --success: #22C55E; --danger: #EF4444; --warning: #F59E0B;
+            --online: #22C55E; --offline: #94A3B8;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow: 0 1px 3px rgba(0,0,0,0.06);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
-            --radius: 12px;
-            --radius-sm: 8px;
-            --radius-xs: 6px;
+            --radius: 12px; --radius-sm: 8px; --radius-xs: 6px;
             --transition: 0.2s ease;
         }
-
         [data-theme="dark"] {
-            --primary: #818CF8;
-            --primary-hover: #6366F1;
-            --primary-light: #1E1B4B;
+            --primary: #818CF8; --primary-hover: #6366F1; --primary-light: #1E1B4B;
             --primary-ring: rgba(129,140,248,0.3);
-            --bg: #0F172A;
-            --surface: #1E293B;
-            --surface-hover: #334155;
-            --border: #334155;
-            --text: #F1F5F9;
-            --text-secondary: #94A3B8;
-            --text-muted: #64748B;
+            --bg: #0F172A; --surface: #1E293B; --surface-hover: #334155; --border: #334155;
+            --text: #F1F5F9; --text-secondary: #94A3B8; --text-muted: #64748B;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
             --shadow: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
             --shadow-lg: 0 10px 25px rgba(0,0,0,0.5);
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            transition: background var(--transition), color var(--transition);
+            background: var(--bg); color: var(--text);
+            display: flex; justify-content: center; align-items: flex-start;
+            min-height: 100vh; transition: background var(--transition), color var(--transition);
         }
-
-        #app {
-            width: 100%;
-            max-width: 480px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Screens */
+        #app { width: 100%; max-width: 480px; min-height: 100vh; display: flex; flex-direction: column; }
         .screen { display: flex; flex-direction: column; flex: 1; }
         .hidden { display: none !important; }
 
-        /* Auth */
         #auth-section {
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
+            justify-content: center; align-items: center; padding: 2rem;
             background: linear-gradient(135deg, var(--primary) 0%, #8B5CF6 100%);
             min-height: 100vh;
         }
-
         .auth-card {
-            background: var(--surface);
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            width: 100%;
-            max-width: 360px;
-            box-shadow: var(--shadow-lg);
+            background: var(--surface); border-radius: 20px;
+            padding: 2.5rem 2rem; text-align: center;
+            width: 100%; max-width: 360px; box-shadow: var(--shadow-lg);
         }
-
-        .auth-card .logo {
-            font-size: 3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-card h1 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text);
-            margin-bottom: 0.25rem;
-        }
-
-        .auth-card .subtitle {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
+        .auth-card .logo { font-size: 3rem; margin-bottom: 0.5rem; }
+        .auth-card h1 { font-size: 1.75rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .auth-card .subtitle { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; }
 
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            border: none;
-            padding: 0.75rem 1.25rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition);
-            width: 100%;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            border: none; padding: 0.7rem 1.25rem; border-radius: var(--radius-sm);
+            font-size: 0.9rem; font-weight: 600; cursor: pointer;
+            transition: all var(--transition); width: 100%;
         }
-
         .btn:active { transform: scale(0.98); }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
+        .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-hover); }
-
-        .btn-sm {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.8rem;
-            width: auto;
-            border-radius: var(--radius-xs);
-        }
-
-        .btn-accept {
-            background: var(--success);
-            color: white;
-        }
+        .btn-sm { padding: 0.4rem 0.7rem; font-size: 0.8rem; width: auto; border-radius: var(--radius-xs); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #DC2626; }
+        .btn-accept { background: var(--success); color: white; }
         .btn-accept:hover { background: #16A34A; }
-
-        .btn-reject {
-            background: var(--danger);
-            color: white;
-        }
+        .btn-reject { background: var(--danger); color: white; }
         .btn-reject:hover { background: #DC2626; }
-
-        .btn-cancel {
-            background: var(--text-muted);
-            color: white;
-        }
+        .btn-cancel { background: var(--text-muted); color: white; }
         .btn-cancel:hover { background: var(--text-secondary); }
-
-        .btn-add {
-            background: var(--primary);
-            color: white;
-        }
+        .btn-add { background: var(--primary); color: white; }
         .btn-add:hover { background: var(--primary-hover); }
+        .btn-outline {
+            background: transparent; color: var(--text-secondary);
+            border: 1.5px solid var(--border);
+        }
+        .btn-outline:hover { background: var(--surface-hover); }
 
-        /* Header */
         .app-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-            background: var(--surface);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.75rem 1rem; background: var(--surface);
             border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            position: sticky; top: 0; z-index: 10;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .header-left .logo-icon {
-            font-size: 1.5rem;
-            line-height: 1;
-        }
-
-        .header-left .logo-text {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
+        .header-left { display: flex; align-items: center; gap: 0.5rem; }
+        .header-left .logo-icon { font-size: 1.5rem; line-height: 1; }
+        .header-left .logo-text { font-size: 1.15rem; font-weight: 700; }
+        .header-right { display: flex; align-items: center; gap: 0.25rem; }
         .icon-btn {
-            background: none;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-xs);
-            cursor: pointer;
-            font-size: 1.15rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background var(--transition);
-            color: var(--text-secondary);
+            background: none; border: none; width: 36px; height: 36px;
+            border-radius: var(--radius-xs); cursor: pointer; font-size: 1.15rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background var(--transition); color: var(--text-secondary);
         }
+        .icon-btn:hover { background: var(--surface-hover); color: var(--text); }
 
-        .icon-btn:hover {
-            background: var(--surface-hover);
-            color: var(--text);
-        }
-
-        /* User Card */
         .user-card {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--surface);
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1rem; background: var(--surface);
             border-bottom: 1px solid var(--border);
         }
-
-        .avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--surface-hover);
-            flex-shrink: 0;
-        }
-
-        .avatar-sm {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: var(--surface-hover);
-            flex-shrink: 0;
-        }
-
-        .user-info {
-            display: flex;
-            flex-direction: column;
-            gap: 0.1rem;
-            flex: 1;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text);
-        }
-
-        .user-status {
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-        }
-
+        .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--surface-hover); flex-shrink: 0; }
+        .avatar-sm { width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: var(--surface-hover); flex-shrink: 0; }
+        .avatar-xs { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; background: var(--surface-hover); flex-shrink: 0; }
+        .user-info { display: flex; flex-direction: column; gap: 0.1rem; flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-status { font-size: 0.8rem; }
         .user-status.online { color: var(--online); }
         .user-status.offline { color: var(--offline); }
 
-        /* Tab Bar */
         .tab-bar {
-            display: flex;
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 57px;
-            z-index: 9;
+            display: flex; background: var(--surface);
+            border-bottom: 1px solid var(--border); overflow-x: auto;
+            position: sticky; top: 57px; z-index: 9;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
-
+        .tab-bar::-webkit-scrollbar { display: none; }
         .tab {
-            flex: 1;
-            padding: 0.7rem 0.5rem;
-            background: none;
-            border: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            cursor: pointer;
-            position: relative;
-            transition: color var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.35rem;
+            flex: 0 0 auto; padding: 0.65rem 0.85rem;
+            background: none; border: none; font-size: 0.82rem; font-weight: 500;
+            color: var(--text-muted); cursor: pointer; position: relative;
+            transition: color var(--transition); white-space: nowrap;
         }
-
         .tab:hover { color: var(--text-secondary); }
-
-        .tab.active {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
+        .tab.active { color: var(--primary); font-weight: 600; }
         .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 20%;
-            right: 20%;
-            height: 2.5px;
-            background: var(--primary);
-            border-radius: 2px;
+            content: ''; position: absolute; bottom: 0; left: 15%; right: 15%;
+            height: 2.5px; background: var(--primary); border-radius: 2px;
         }
-
         .tab .badge {
-            background: var(--danger);
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 700;
-            padding: 0.1rem 0.4rem;
-            border-radius: 10px;
-            min-width: 18px;
-            text-align: center;
-            line-height: 1.3;
+            background: var(--danger); color: white; font-size: 0.6rem; font-weight: 700;
+            padding: 0.1rem 0.35rem; border-radius: 10px; min-width: 17px;
+            text-align: center; line-height: 1.3; display: inline-block;
         }
-
         .tab .badge.hidden { display: none; }
 
-        /* Tab Content */
-        .tab-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.75rem;
-        }
-
+        .tab-content { flex: 1; overflow-y: auto; padding: 0.75rem; }
         .tab-pane { display: none; }
         .tab-pane.active { display: block; }
 
         .section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-            margin-top: 0.75rem;
+            font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 0.5rem; margin-top: 0.75rem;
         }
-
         .section-title:first-child { margin-top: 0; }
+        .empty-msg { text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 2rem 0; }
 
-        .empty-msg {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 2rem 0;
-        }
-
-        /* Items (contacts, requests, search results) */
         .item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.65rem 0.75rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 0.65rem;
+            padding: 0.6rem 0.7rem; background: var(--surface);
+            border: 1px solid var(--border); border-radius: var(--radius);
+            margin-bottom: 0.45rem;
             transition: all var(--transition);
         }
+        .item:hover { border-color: var(--primary); box-shadow: var(--shadow-sm); }
+        .item .name { font-size: 0.88rem; font-weight: 500; flex: 1; text-align: left; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .item-actions { display: flex; gap: 0.35rem; flex-shrink: 0; align-items: center; }
 
-        .item:hover {
-            border-color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .item .name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            flex: 1;
-            text-align: left;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 0.35rem;
-            flex-shrink: 0;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .status-dot.online { background: var(--online); }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .status-dot.online { background: var(--online); box-shadow: 0 0 4px var(--online); }
         .status-dot.offline { background: var(--offline); }
 
         .buzz-btn {
-            background: transparent;
-            border: 1.5px solid var(--border);
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-xs);
-            cursor: pointer;
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition);
-            flex-shrink: 0;
+            background: transparent; border: 1.5px solid var(--border);
+            width: 34px; height: 34px; border-radius: var(--radius-xs);
+            cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all var(--transition); flex-shrink: 0;
         }
-
-        .buzz-btn:hover {
-            background: #FEE2E2;
-            border-color: #FCA5A5;
-        }
+        .buzz-btn:hover { background: #FEE2E2; border-color: #FCA5A5; }
 
         .badge-label {
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            flex-shrink: 0;
+            font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.45rem;
+            border-radius: 4px; flex-shrink: 0;
         }
+        .badge-contact { background: #DCFCE7; color: #15803D; }
+        [data-theme="dark"] .badge-contact { background: #052E16; color: #4ADE80; }
+        .badge-pending { background: #FEF3C7; color: #B45309; }
+        [data-theme="dark"] .badge-pending { background: #451A03; color: #FBBF24; }
+        .badge-group { background: var(--primary-light); color: var(--primary); }
+        [data-theme="dark"] .badge-group { background: #1E1B4B; color: #818CF8; }
+        .badge-sent { background: #DBEAFE; color: #1D4ED8; }
+        [data-theme="dark"] .badge-sent { background: #172554; color: #60A5FA; }
+        .badge-received { background: #FCE7F3; color: #BE185D; }
+        [data-theme="dark"] .badge-received { background: #4A0E2E; color: #F472B6; }
 
-        .badge-contact {
-            background: #DCFCE7;
-            color: #15803D;
-        }
-
-        [data-theme="dark"] .badge-contact {
-            background: #052E16;
-            color: #4ADE80;
-        }
-
-        .badge-pending {
-            background: #FEF3C7;
-            color: #B45309;
-        }
-
-        [data-theme="dark"] .badge-pending {
-            background: #451A03;
-            color: #FBBF24;
-        }
-
-        /* Search */
-        .search-box {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 0.75rem;
-        }
-
+        .search-box { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
         .search-box input {
-            flex: 1;
-            padding: 0.65rem 0.85rem;
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            outline: none;
-            background: var(--surface);
-            color: var(--text);
-            transition: border-color var(--transition);
+            flex: 1; padding: 0.6rem 0.85rem;
+            border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 0.9rem; outline: none; background: var(--surface);
+            color: var(--text); transition: border-color var(--transition);
         }
+        .search-box input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+        .search-box input::placeholder { color: var(--text-muted); }
+        .search-box .btn { width: auto; padding: 0.6rem 1rem; }
 
-        .search-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-ring);
+        .spinner {
+            width: 20px; height: 20px;
+            border: 2px solid var(--border); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.6s linear infinite; margin: 1rem auto;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .search-box input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .search-box .btn {
-            width: auto;
-            padding: 0.65rem 1rem;
-        }
-
-
-
-        /* Shake */
-        .shake {
-            animation: shakeAnim 0.5s;
-        }
-
+        .shake { animation: shakeAnim 0.5s; }
         @keyframes shakeAnim {
             0% { transform: translate(1px, 1px) rotate(0deg); }
             10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -517,87 +227,94 @@
             100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
 
-        /* Toast notification */
         .toast-container {
-            position: fixed;
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: 90%;
-            max-width: 420px;
-            pointer-events: none;
+            position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+            z-index: 100; display: flex; flex-direction: column; gap: 0.5rem;
+            width: 90%; max-width: 420px; pointer-events: none;
         }
-
         .toast {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0.75rem 1rem;
-            box-shadow: var(--shadow-lg);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: toastIn 0.3s ease;
-            pointer-events: auto;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 0.7rem 1rem;
+            box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 0.7rem;
+            animation: toastIn 0.3s ease; pointer-events: auto;
             border-left: 3px solid var(--primary);
         }
-
         .toast.toast-error { border-left-color: var(--danger); }
         .toast.toast-success { border-left-color: var(--success); }
         .toast.toast-buzz { border-left-color: var(--warning); }
-
-        .toast .toast-icon { font-size: 1.25rem; }
+        .toast .toast-icon { font-size: 1.2rem; }
         .toast .toast-text { font-size: 0.85rem; color: var(--text); flex: 1; }
-        .toast .toast-close {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 1rem;
-            padding: 0.25rem;
+        .toast .toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1rem; padding: 0.2rem; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            z-index: 50; display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal {
+            background: var(--surface); border-radius: var(--radius);
+            padding: 1.5rem; width: 90%; max-width: 380px; max-height: 80vh;
+            box-shadow: var(--shadow-lg); display: flex; flex-direction: column;
+        }
+        .modal h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+        .modal input {
+            padding: 0.6rem 0.8rem; border: 1.5px solid var(--border);
+            border-radius: var(--radius-xs); font-size: 0.9rem; outline: none;
+            background: var(--surface); color: var(--text); margin-bottom: 0.75rem;
+        }
+        .modal input:focus { border-color: var(--primary); }
+        .modal .member-list { max-height: 200px; overflow-y: auto; margin-bottom: 0.75rem; }
+        .modal .member-row {
+            display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0;
+        }
+        .modal .member-row label { display: flex; align-items: center; gap: 0.5rem; flex: 1; cursor: pointer; font-size: 0.85rem; }
+        .modal .member-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); margin: 0; }
+        .modal .modal-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .modal .modal-actions .btn { flex: 1; }
+
+        .group-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        .group-header h3 { font-size: 0.9rem; font-weight: 600; margin: 0; }
+
+        .member-chip {
+            display: inline-flex; align-items: center; gap: 0.25rem;
+            background: var(--surface-hover); border-radius: 20px;
+            padding: 0.2rem 0.6rem 0.2rem 0.2rem; font-size: 0.75rem; margin: 0.15rem;
         }
 
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .history-item {
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--border);
+            font-size: 0.82rem;
         }
+        .history-item:last-child { border-bottom: none; }
+        .history-item .h-action { font-weight: 500; flex: 1; }
+        .history-item .h-who { color: var(--text-secondary); }
+        .history-item .h-time { color: var(--text-muted); font-size: 0.7rem; flex-shrink: 0; }
 
-        @keyframes toastOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(-10px); }
+        /* Pull-to-refresh indicator */
+        .ptr-indicator {
+            text-align: center; padding: 0.5rem; font-size: 0.8rem;
+            color: var(--text-muted); display: none;
         }
+        .ptr-indicator.active { display: block; }
 
-        /* Loading spinner */
-        .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.6s linear infinite;
-            margin: 1rem auto;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Responsive */
         @media (min-width: 640px) {
             #app { max-width: 560px; }
             body { align-items: center; padding: 1rem; }
             #app { min-height: auto; border-radius: 20px; box-shadow: var(--shadow-lg); max-height: 95vh; }
-            .tab-content { max-height: calc(95vh - 200px); }
+            .tab-content { max-height: calc(95vh - 210px); }
             .app-header { border-radius: 20px 20px 0 0; }
         }
-
         @media (min-width: 1024px) {
             body { padding: 2rem; }
             #app { max-width: 600px; }
         }
-
         @media (display-mode: standalone) {
             .app-header { padding-top: env(safe-area-inset-top, 0.75rem); }
         }
@@ -624,8 +341,8 @@
                     <span class="logo-text">Zumbido</span>
                 </div>
                 <div class="header-right">
-                    <button id="sound-toggle" class="icon-btn" title="Activar/desactivar sonido">🔊</button>
-                    <button id="theme-toggle" class="icon-btn" title="Cambiar tema">🌙</button>
+                    <button id="sound-toggle" class="icon-btn" title="Sonido">🔊</button>
+                    <button id="theme-toggle" class="icon-btn" title="Tema">🌙</button>
                     <button id="logout-btn" class="icon-btn" title="Desconectar">✕</button>
                 </div>
             </header>
@@ -645,15 +362,18 @@
                     <span id="requests-badge" class="badge hidden">0</span>
                 </button>
                 <button class="tab" data-tab="search" role="tab">Buscar</button>
+                <button class="tab" data-tab="history" role="tab">Historial</button>
+                <button class="tab" data-tab="groups" role="tab">Grupos</button>
             </nav>
 
             <div class="tab-content">
+                <!-- CONTACTS -->
                 <div id="tab-contacts" class="tab-pane active" role="tabpanel">
-                    <div id="contacts-list">
-                        <p class="empty-msg">Cargando contactos...</p>
-                    </div>
+                    <div class="ptr-indicator" id="ptr-indicator">↓ Suelta para actualizar</div>
+                    <div id="contacts-list"><p class="empty-msg">Cargando contactos...</p></div>
                 </div>
 
+                <!-- REQUESTS -->
                 <div id="tab-requests" class="tab-pane" role="tabpanel">
                     <div id="requests-section">
                         <h3 class="section-title">Solicitudes Pendientes</h3>
@@ -665,6 +385,7 @@
                     </div>
                 </div>
 
+                <!-- SEARCH -->
                 <div id="tab-search" class="tab-pane" role="tabpanel">
                     <div class="search-box">
                         <input id="search-input" type="text" placeholder="Nombre o email..." autocomplete="off">
@@ -674,9 +395,22 @@
                         <p class="empty-msg">Busca usuarios por nombre o email para agregar como contacto.</p>
                     </div>
                 </div>
+
+                <!-- HISTORY -->
+                <div id="tab-history" class="tab-pane" role="tabpanel">
+                    <h3 class="section-title">Zumbidos Recientes</h3>
+                    <div id="history-list"><p class="empty-msg">Cargando historial...</p></div>
+                </div>
+
+                <!-- GROUPS -->
+                <div id="tab-groups" class="tab-pane" role="tabpanel">
+                    <div class="group-header">
+                        <h3>Mis Grupos</h3>
+                        <button id="create-group-btn" class="btn btn-sm btn-primary">+ Crear</button>
+                    </div>
+                    <div id="groups-list"><p class="empty-msg">Cargando grupos...</p></div>
+                </div>
             </div>
-
-
         </div>
     </div>
 
@@ -685,7 +419,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit, orderBy, increment, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
         const firebaseConfig = {
@@ -697,482 +431,641 @@
             appId: "1:873003768289:web:5e3d7a85ebaea725469aa0"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        const fapp = initializeApp(firebaseConfig);
+        const auth = getAuth(fapp);
+        const db = getFirestore(fapp);
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
 
         let messaging;
-        try { messaging = getMessaging(app); } catch (e) { console.log("FCM not available"); }
+        try { messaging = getMessaging(fapp); } catch (e) { console.log("FCM:", e.message); }
 
         const sessionDeviceId = Math.random().toString(36).substring(7);
         let contactUids = new Set();
         let sentRequestUids = new Set();
-        let unsubContacts = null;
-        let unsubIncoming = null;
-        let unsubOutgoing = null;
-        let unsubBuzzes = null;
+        let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null };
         let contactStatusUnsubs = new Map();
+        let unreadCount = 0;
+        let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
+        let buzzesCache = [];
 
+        const $ = (id) => document.getElementById(id);
         const els = {
-            auth: document.getElementById('auth-section'),
-            main: document.getElementById('main-section'),
-            userName: document.getElementById('user-name'),
-            userPhoto: document.getElementById('user-photo'),
-            userStatus: document.getElementById('user-status'),
-            contactsList: document.getElementById('contacts-list'),
-            requestsList: document.getElementById('requests-list'),
-            requestsSection: document.getElementById('requests-section'),
-            sentList: document.getElementById('sent-list'),
-            sentSection: document.getElementById('sent-section'),
-            searchInput: document.getElementById('search-input'),
-            searchResults: document.getElementById('search-results'),
-            requestsBadge: document.getElementById('requests-badge'),
-            log: document.getElementById('log'),
-            soundToggle: document.getElementById('sound-toggle'),
-            themeToggle: document.getElementById('theme-toggle'),
-            toastContainer: document.getElementById('toast-container')
+            auth: $('auth-section'), main: $('main-section'),
+            userName: $('user-name'), userPhoto: $('user-photo'), userStatus: $('user-status'),
+            contactsList: $('contacts-list'), requestsList: $('requests-list'),
+            requestsSection: $('requests-section'), sentList: $('sent-list'), sentSection: $('sent-section'),
+            searchInput: $('search-input'), searchResults: $('search-results'),
+            requestsBadge: $('requests-badge'), historyList: $('history-list'),
+            groupsList: $('groups-list'), soundToggle: $('sound-toggle'),
+            themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
+            ptrIndicator: $('ptr-indicator')
         };
 
         // ============================================================
         // THEME
         // ============================================================
-
-        function getPreferredTheme() {
-            const saved = localStorage.getItem('zumbido-theme');
-            if (saved) return saved;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        function getTheme() {
+            const s = localStorage.getItem('zumbido-theme');
+            return s || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         }
-
-        function setTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('zumbido-theme', theme);
-            els.themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+        function setTheme(t) {
+            document.documentElement.setAttribute('data-theme', t);
+            localStorage.setItem('zumbido-theme', t);
+            els.themeToggle.textContent = t === 'dark' ? '☀️' : '🌙';
         }
-
-        setTheme(getPreferredTheme());
-
-        els.themeToggle.addEventListener('click', () => {
-            const current = document.documentElement.getAttribute('data-theme');
-            setTheme(current === 'dark' ? 'light' : 'dark');
-        });
+        setTheme(getTheme());
+        els.themeToggle.addEventListener('click', () => setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 
         // ============================================================
         // SOUND
         // ============================================================
-
-        let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
-
-        function updateSoundUI() {
-            els.soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
-        }
-
+        function updateSoundUI() { els.soundToggle.textContent = soundEnabled ? '🔊' : '🔇'; }
         updateSoundUI();
-
         els.soundToggle.addEventListener('click', () => {
             soundEnabled = !soundEnabled;
             localStorage.setItem('zumbido-sound', soundEnabled ? 'on' : 'off');
             updateSoundUI();
         });
 
-        // ============================================================
-        // LOGGER
-        // ============================================================
-
-        function log(msg, type) {
-            console.log(`[${type || 'info'}] ${msg}`);
+        function getContactSound(uid) {
+            return localStorage.getItem('zumbido-sound-' + uid) || 'default';
         }
+        function setContactSound(uid, val) {
+            localStorage.setItem('zumbido-sound-' + uid, val);
+        }
+        const SOUND_LABELS = { default: '🔔', bell: '🔔', chime: '🎵', alert: '📢', none: '🔇' };
+
+        // ============================================================
+        // LOG
+        // ============================================================
+        function log(msg, type) { console.log(`[${type || 'info'}] ${msg}`); }
 
         // ============================================================
         // TOAST
         // ============================================================
-
-        function showToast(msg, type, duration) {
+        function showToast(msg, type, dur) {
             const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'buzz' ? '🔔' : 'ℹ️';
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type || 'info'}`;
-            toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-text">${msg}</span><button class="toast-close">✕</button>`;
-            toast.querySelector('.toast-close').onclick = () => toast.remove();
-            els.toastContainer.appendChild(toast);
-            setTimeout(() => {
-                toast.style.animation = 'toastOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, duration || 3000);
+            const t = document.createElement('div');
+            t.className = `toast toast-${type || 'info'}`;
+            t.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-text">${msg}</span><button class="toast-close">✕</button>`;
+            t.querySelector('.toast-close').onclick = () => t.remove();
+            els.toastContainer.appendChild(t);
+            setTimeout(() => { t.style.animation = 'toastOut 0.3s ease'; setTimeout(() => t.remove(), 300); }, dur || 3000);
         }
 
         // ============================================================
         // AUTH
         // ============================================================
-
-        document.getElementById('login-btn').addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then(() => log("Inicio de sesión exitoso", 'success'))
-                .catch(err => log("Error al iniciar sesión: " + err.message, 'error'));
+        $('login-btn').addEventListener('click', () => {
+            signInWithPopup(auth, provider).catch(err => log("Login: " + err.message, 'error'));
         });
-
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            setUserOnline(false);
-            if (unsubContacts) unsubContacts();
-            if (unsubIncoming) unsubIncoming();
-            if (unsubOutgoing) unsubOutgoing();
-            if (unsubBuzzes) unsubBuzzes();
-            cleanupContactStatusListeners();
+        $('logout-btn').addEventListener('click', () => {
+            setOnline(false);
+            Object.values(unsubs).forEach(u => { if (u) u(); });
+            cleanupContactStatus();
             signOut(auth);
         });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                log("Usuario autenticado: " + user.displayName, 'success');
+                log("Autenticado: " + user.displayName, 'success');
                 els.userName.textContent = user.displayName;
                 els.userPhoto.src = user.photoURL || '';
                 els.auth.classList.add('hidden');
                 els.main.classList.remove('hidden');
-
-                contactUids = new Set();
-                sentRequestUids = new Set();
+                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = [];
 
                 try {
                     await setDoc(doc(db, "users", user.uid), {
-                        displayName: user.displayName,
-                        photoURL: user.photoURL,
-                        email: user.email,
-                        lastSeen: serverTimestamp()
+                        displayName: user.displayName, photoURL: user.photoURL,
+                        email: user.email, lastSeen: serverTimestamp()
                     }, { merge: true });
-                    setUserOnline(true);
-                } catch (e) {
-                    log("Error al guardar perfil: " + e.message, 'error');
-                }
+                    setOnline(true);
+                } catch (e) { log("Perfil: " + e.message, 'error'); }
 
-                if (unsubContacts) unsubContacts();
-                if (unsubIncoming) unsubIncoming();
-                if (unsubOutgoing) unsubOutgoing();
-                if (unsubBuzzes) unsubBuzzes();
-                cleanupContactStatusListeners();
-
-                listenForContacts(user);
-                listenForIncomingRequests(user);
-                listenForOutgoingRequests(user);
-                listenForBuzzes(user);
-                setupFCM(user);
+                Object.values(unsubs).forEach(u => { if (u) u(); });
+                cleanupContactStatus();
+                listenContacts(user); listenIncoming(user); listenOutgoing(user); listenBuzzes(user);
+                listenHistory(user); listenGroups(user); setupFCM(user);
+                checkReplyParam();
             } else {
                 els.auth.classList.remove('hidden');
                 els.main.classList.add('hidden');
             }
         });
 
-        function setUserOnline(online) {
-            const user = auth.currentUser;
-            if (!user) return;
-            setDoc(doc(db, "users", user.uid), { online, lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
+        function setOnline(on) {
+            const u = auth.currentUser;
+            if (!u) return;
+            setDoc(doc(db, "users", u.uid), { online: on, lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
         }
-
-        window.addEventListener('beforeunload', () => setUserOnline(false));
+        window.addEventListener('beforeunload', () => setOnline(false));
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                setUserOnline(true);
+                setOnline(true);
+                clearBadge();
             }
         });
 
         // ============================================================
+        // BADGE
+        // ============================================================
+        function updateBadge(count) {
+            unreadCount = count;
+            if (navigator.setAppBadge) {
+                navigator.setAppBadge(count).catch(() => {});
+            }
+            document.title = count > 0 ? `(${count}) Zumbido` : 'Zumbido';
+        }
+        function clearBadge() {
+            unreadCount = 0;
+            if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+            document.title = 'Zumbido';
+        }
+
+        // ============================================================
+        // REPLY PARAM
+        // ============================================================
+        function checkReplyParam() {
+            const p = new URLSearchParams(window.location.search);
+            const uid = p.get('replyTo');
+            const name = p.get('replyName');
+            if (uid && name) {
+                window.history.replaceState({}, '', '/');
+                setTimeout(() => sendBuzz(uid, name), 500);
+                showToast("🔔 Devolviendo zumbido a " + name, 'buzz');
+            }
+        }
+
+        // ============================================================
         // FCM
         // ============================================================
-
         async function setupFCM(user) {
             if (!messaging || !('Notification' in window)) return;
             try {
-                if (Notification.permission === 'default') {
-                    await Notification.requestPermission();
-                }
+                if (Notification.permission === 'default') await Notification.requestPermission();
                 if (Notification.permission !== 'granted') return;
-
-                const token = await getToken(messaging, {
-                    vapidKey: 'BIUGgod_FWatCX8GCwJvEX_41CgKO-_r4V52zejT2WgogzEerpNBth3-G_45mww1SFP3gwMjHG09aysieBVs1gA'
-                });
-
+                const token = await getToken(messaging, { vapidKey: 'BIUGgod_FWatCX8GCwJvEX_41CgKO-_r4V52zejT2WgogzEerpNBth3-G_45mww1SFP3gwMjHG09aysieBVs1gA' });
                 if (token) {
                     await setDoc(doc(db, "users", user.uid, "fcmTokens", sessionDeviceId), {
-                        token,
-                        deviceId: sessionDeviceId,
-                        userAgent: navigator.userAgent,
-                        createdAt: serverTimestamp()
+                        token, deviceId: sessionDeviceId, userAgent: navigator.userAgent, createdAt: serverTimestamp()
                     }, { merge: true });
-                    log("FCM listo para notificaciones push", 'success');
+                    log("FCM listo", 'success');
                 }
-
-                onMessage(messaging, (payload) => {
-                    const d = payload.data || {};
+                onMessage(messaging, (p) => {
+                    const d = p.data || {};
                     if (d.type === 'buzz') {
-                        log("¡ZUMBIDO recibido (FCM)!", 'buzz');
-                        showToast("🔔 " + (d.from || 'Alguien') + " te ha enviado un zumbido", 'buzz');
-                        triggerShake();
-                        if (soundEnabled) playSound();
+                        handleBuzzArrival({ from: d.fromName || 'Alguien', fromUid: d.fromUid || '' });
                     }
                 });
-            } catch (e) {
-                log("FCM no disponible: " + e.message, 'error');
-            }
+            } catch (e) { log("FCM: " + e.message, 'error'); }
         }
 
         // ============================================================
         // TABS
         // ============================================================
-
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
                 tab.classList.add('active');
-                const pane = document.getElementById('tab-' + tab.dataset.tab);
+                const pane = $('tab-' + tab.dataset.tab);
                 if (pane) pane.classList.add('active');
+                if (tab.dataset.tab === 'contacts' || tab.dataset.tab === 'history') clearBadge();
             });
         });
 
         // ============================================================
+        // BUZZ HANDLER
+        // ============================================================
+        function handleBuzzArrival(data) {
+            log("¡ZUMBIDO de " + data.from + "!", 'buzz');
+            showToast("🔔 " + data.from + " te ha enviado un zumbido", 'buzz');
+            triggerShake();
+            if (soundEnabled) {
+                const custom = getContactSound(data.fromUid);
+                if (custom !== 'none') playSound(custom);
+            }
+            showBrowserNotification(data.from, data.fromUid);
+            if (document.visibilityState !== 'visible') {
+                updateBadge(unreadCount + 1);
+            }
+        }
+
+        // ============================================================
         // LISTENERS
         // ============================================================
-
-        function listenForContacts(user) {
+        function listenContacts(user) {
             const q = query(collection(db, "contacts", user.uid, "list"), limit(50));
-            unsubContacts = onSnapshot(q, (snap) => {
+            unsubs.contacts = onSnapshot(q, (snap) => {
                 els.contactsList.innerHTML = '';
                 contactUids = new Set();
-                cleanupContactStatusListeners();
+                cleanupContactStatus();
+                if (snap.empty) { els.contactsList.innerHTML = '<p class="empty-msg">No tienes contactos aún.</p>'; return; }
 
-                if (snap.empty) {
-                    els.contactsList.innerHTML = '<p class="empty-msg">No tienes contactos aún. Busca usuarios para agregar.</p>';
-                    return;
-                }
-
+                let items = [];
                 snap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const contactId = docSnap.id;
-                    contactUids.add(contactId);
+                    const d = docSnap.data();
+                    const cid = docSnap.id;
+                    contactUids.add(cid);
+                    items.push({ id: cid, name: d.displayName, photo: d.photoURL });
+                });
 
+                items.forEach(c => {
                     const el = document.createElement('div');
                     el.className = 'item';
-                    el.dataset.uid = contactId;
+                    el.dataset.uid = c.id;
+                    const sound = getContactSound(c.id);
                     el.innerHTML = `
-                        <div class="status-dot offline" id="status-${contactId}"></div>
-                        <img src="${escapeHtml(data.photoURL || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
-                        <span class="name">${escapeHtml(data.displayName)}</span>
-                        <button class="buzz-btn" title="¡Zumbar!">🔔</button>
+                        <div class="status-dot offline" id="sdot-${c.id}"></div>
+                        <img src="${esc(c.photo)}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
+                        <span class="name">${esc(c.name)}</span>
+                        <div class="item-actions">
+                            <button class="icon-btn" style="font-size:0.8rem;width:28px;height:28px" title="Sonido: ${sound}" data-action="sound" data-uid="${c.id}">${SOUND_LABELS[sound] || '🔔'}</button>
+                            <button class="buzz-btn" title="¡Zumbar!" data-action="buzz">🔔</button>
+                            <button class="icon-btn" style="color:var(--text-muted);font-size:0.8rem;width:28px;height:28px" title="Eliminar contacto" data-action="delete" data-uid="${c.id}" data-name="${esc(c.name)}">✕</button>
+                        </div>
                     `;
-                    el.querySelector('.buzz-btn').onclick = () => sendBuzz(contactId, data.displayName);
-                    els.contactsList.appendChild(el);
 
-                    listenForContactStatus(contactId);
+                    el.querySelector('[data-action="buzz"]').onclick = () => sendBuzz(c.id, c.name);
+
+                    el.querySelector('[data-action="sound"]').onclick = (e) => {
+                        const btn = e.currentTarget;
+                        const uid = btn.dataset.uid;
+                        const cycle = ['default', 'bell', 'chime', 'alert', 'none'];
+                        const cur = getContactSound(uid);
+                        const idx = cycle.indexOf(cur);
+                        const next = cycle[(idx + 1) % cycle.length];
+                        setContactSound(uid, next);
+                        btn.textContent = SOUND_LABELS[next];
+                        btn.title = 'Sonido: ' + next;
+                        showToast("Sonido: " + next, 'info');
+                    };
+
+                    el.querySelector('[data-action="delete"]').onclick = (e) => {
+                        const btn = e.currentTarget;
+                        if (confirm("¿Eliminar a " + btn.dataset.name + " de tus contactos?")) {
+                            deleteContact(btn.dataset.uid, btn.dataset.name);
+                        }
+                    };
+
+                    els.contactsList.appendChild(el);
+                    listenContactStatus(c.id);
                 });
             });
         }
 
-        function listenForContactStatus(uid) {
+        function listenContactStatus(uid) {
             const unsub = onSnapshot(doc(db, "users", uid), (snap) => {
-                const data = snap.data();
-                const dot = document.getElementById('status-' + uid);
-                if (dot) {
-                    if (data && data.online) {
-                        dot.className = 'status-dot online';
-                    } else {
-                        dot.className = 'status-dot offline';
-                    }
-                }
+                const d = snap.data();
+                const dot = $('sdot-' + uid);
+                if (dot) dot.className = 'status-dot ' + (d && d.online ? 'online' : 'offline');
             });
             contactStatusUnsubs.set(uid, unsub);
         }
 
-        function cleanupContactStatusListeners() {
+        function cleanupContactStatus() {
             contactStatusUnsubs.forEach(u => u());
             contactStatusUnsubs.clear();
         }
 
-        function listenForIncomingRequests(user) {
-            const q = query(
-                collection(db, "contactRequests"),
-                where("to", "==", user.uid),
-                where("status", "==", "pending")
-            );
-            unsubIncoming = onSnapshot(q, (snap) => {
+        function listenIncoming(user) {
+            const q = query(collection(db, "contactRequests"), where("to", "==", user.uid), where("status", "==", "pending"));
+            unsubs.incoming = onSnapshot(q, (snap) => {
                 els.requestsList.innerHTML = '';
                 let count = 0;
-
-                if (snap.empty) {
-                    els.requestsSection.classList.add('hidden');
-                    els.requestsBadge.classList.add('hidden');
-                    return;
-                }
-
+                if (snap.empty) { els.requestsSection.classList.add('hidden'); els.requestsBadge.classList.add('hidden'); return; }
                 els.requestsSection.classList.remove('hidden');
-
-                snap.forEach(docSnap => {
+                snap.forEach(ds => {
                     count++;
-                    const data = docSnap.data();
+                    const d = ds.data();
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.innerHTML = `
-                        <img src="${escapeHtml(data.fromPhoto || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
-                        <span class="name">${escapeHtml(data.fromName)}</span>
+                        <img src="${esc(d.fromPhoto || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
+                        <span class="name">${esc(d.fromName)}</span>
                         <div class="item-actions">
-                            <button class="btn-sm btn-accept" data-request-id="${docSnap.id}" data-from-uid="${escapeHtml(data.from)}" data-from-name="${escapeHtml(data.fromName)}" data-from-photo="${escapeHtml(data.fromPhoto || '')}">✅</button>
-                            <button class="btn-sm btn-reject" data-request-id="${docSnap.id}">❌</button>
+                            <button class="btn-sm btn-accept" data-rid="${ds.id}" data-uid="${esc(d.from)}" data-name="${esc(d.fromName)}" data-photo="${esc(d.fromPhoto || '')}">✅</button>
+                            <button class="btn-sm btn-reject" data-rid="${ds.id}">❌</button>
                         </div>
                     `;
                     el.querySelector('.btn-accept').onclick = (e) => {
-                        const btn = e.currentTarget;
-                        acceptRequest(btn.dataset.requestId, btn.dataset.fromUid, btn.dataset.fromName, btn.dataset.fromPhoto);
+                        const b = e.currentTarget;
+                        acceptRequest(b.dataset.rid, b.dataset.uid, b.dataset.name, b.dataset.photo);
                     };
-                    el.querySelector('.btn-reject').onclick = (e) => {
-                        rejectRequest(e.currentTarget.dataset.requestId);
-                    };
+                    el.querySelector('.btn-reject').onclick = (e) => rejectRequest(e.currentTarget.dataset.rid);
                     els.requestsList.appendChild(el);
                 });
-
-                if (count > 0) {
-                    els.requestsBadge.textContent = count;
-                    els.requestsBadge.classList.remove('hidden');
-                } else {
-                    els.requestsBadge.classList.add('hidden');
-                }
+                if (count > 0) { els.requestsBadge.textContent = count; els.requestsBadge.classList.remove('hidden'); }
+                else { els.requestsBadge.classList.add('hidden'); }
             });
         }
 
-        function listenForOutgoingRequests(user) {
-            const q = query(
-                collection(db, "contactRequests"),
-                where("from", "==", user.uid),
-                where("status", "==", "pending")
-            );
-            unsubOutgoing = onSnapshot(q, (snap) => {
+        function listenOutgoing(user) {
+            const q = query(collection(db, "contactRequests"), where("from", "==", user.uid), where("status", "==", "pending"));
+            unsubs.outgoing = onSnapshot(q, (snap) => {
                 els.sentList.innerHTML = '';
                 sentRequestUids = new Set();
-
-                if (snap.empty) {
-                    els.sentSection.classList.add('hidden');
-                    return;
-                }
-
+                if (snap.empty) { els.sentSection.classList.add('hidden'); return; }
                 els.sentSection.classList.remove('hidden');
-
-                snap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    sentRequestUids.add(data.to);
-
+                snap.forEach(ds => {
+                    const d = ds.data();
+                    sentRequestUids.add(d.to);
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.innerHTML = `
-                        <img src="${escapeHtml(data.toPhoto || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
-                        <span class="name">${escapeHtml(data.toName)}</span>
+                        <img src="${esc(d.toPhoto || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
+                        <span class="name">${esc(d.toName)}</span>
                         <span class="badge-label badge-pending">Pendiente</span>
-                        <button class="btn-sm btn-cancel" data-request-id="${docSnap.id}">✕</button>
+                        <button class="btn-sm btn-cancel" data-rid="${ds.id}">✕</button>
                     `;
-                    el.querySelector('.btn-cancel').onclick = (e) => {
-                        cancelRequest(e.currentTarget.dataset.requestId);
-                    };
+                    el.querySelector('.btn-cancel').onclick = (e) => cancelRequest(e.currentTarget.dataset.rid);
                     els.sentList.appendChild(el);
                 });
             });
         }
 
-        function listenForBuzzes(user) {
-            log("Escuchando zumbidos...", 'info');
+        function listenBuzzes(user) {
             const q = query(collection(db, "buzzes"), where("toUid", "==", user.uid));
-            let appStartTime = Date.now();
-
-            unsubBuzzes = onSnapshot(q, (snap) => {
+            let start = Date.now();
+            unsubs.buzzes = onSnapshot(q, (snap) => {
                 snap.docChanges().forEach(change => {
                     if (change.type === "added") {
-                        const data = change.doc.data();
-                        const buzzTime = data.timestamp ? data.timestamp.toMillis() : Date.now();
-                        if (buzzTime > appStartTime - 10000 && data.deviceId !== sessionDeviceId) {
-                            log("¡ZUMBIDO de " + data.from + "!", 'buzz');
-                            showToast("🔔 " + data.from + " te ha enviado un zumbido", 'buzz');
-                            triggerShake();
-                            if (soundEnabled) playSound();
-                            showBrowserNotification(data.from);
+                        const d = change.doc.data();
+                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
+                        if (t > start - 10000 && d.deviceId !== sessionDeviceId) {
+                            handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName });
                         }
                     }
                 });
-            }, (error) => {
-                log("Error en listener de zumbidos: " + error.message, 'error');
+            }, (e) => log("Buzz error: " + e.message, 'error'));
+        }
+
+        // ============================================================
+        // HISTORY
+        // ============================================================
+        function listenHistory(user) {
+            const received = query(collection(db, "buzzes"), where("toUid", "==", user.uid), limit(30));
+            const sent = query(collection(db, "buzzes"), where("fromUid", "==", user.uid), limit(30));
+
+            const rx = new Map(), sx = new Map();
+            let rOk = false, sOk = false;
+
+            function renderH() {
+                if (!rOk || !sOk) return;
+                const all = [...rx.values(), ...sx.values()];
+                all.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+                const top = all.slice(0, 50);
+                if (top.length === 0) { els.historyList.innerHTML = '<p class="empty-msg">Sin zumbidos aún.</p>'; return; }
+                els.historyList.innerHTML = '';
+                top.forEach(h => {
+                    const el = document.createElement('div');
+                    el.className = 'history-item';
+                    const type = h.dir === 'sent' ? 'Enviado' : 'Recibido';
+                    const who = h.dir === 'sent' ? h.toName : h.from;
+                    const cls = h.dir === 'sent' ? 'badge-sent' : 'badge-received';
+                    const t = h.ts ? new Date(h.ts).toLocaleString() : '';
+                    el.innerHTML = `
+                        <span class="badge-label ${cls}">${type}</span>
+                        <span class="h-who">${esc(who)}</span>
+                        <span class="h-time">${t}</span>
+                    `;
+                    els.historyList.appendChild(el);
+                });
+            }
+
+            const u1 = onSnapshot(received, (snap) => {
+                rx.clear();
+                snap.forEach(ds => { const d = ds.data(); rx.set(ds.id, { dir: 'received', from: d.from, ts: d.timestamp ? d.timestamp.toMillis() : 0 }); });
+                rOk = true; renderH();
+            });
+            const u2 = onSnapshot(sent, (snap) => {
+                sx.clear();
+                snap.forEach(ds => { const d = ds.data(); sx.set(ds.id, { dir: 'sent', toName: d.toName, ts: d.timestamp ? d.timestamp.toMillis() : 0 }); });
+                sOk = true; renderH();
+            });
+
+            unsubs.history = () => { u1(); u2(); };
+        }
+
+        // ============================================================
+        // GROUPS
+        // ============================================================
+        let myGroups = new Map();
+
+        function listenGroups(user) {
+            const q = query(collection(db, "groups"), where("memberIds", "array-contains", user.uid));
+            unsubs.groups = onSnapshot(q, (snap) => {
+                myGroups.clear();
+                els.groupsList.innerHTML = '';
+                if (snap.empty) { els.groupsList.innerHTML = '<p class="empty-msg">No estás en ningún grupo. Crea uno!</p>'; return; }
+                snap.forEach(ds => {
+                    const d = ds.data();
+                    myGroups.set(ds.id, d);
+                    const el = document.createElement('div');
+                    el.className = 'item';
+                    const mc = (d.memberIds || []).length;
+                    el.innerHTML = `
+                        <span style="font-size:1.2rem">👥</span>
+                        <span class="name">${esc(d.name)}</span>
+                        <span class="badge-label badge-group">${mc}</span>
+                        <div class="item-actions">
+                            <button class="btn-sm btn-outline" data-action="members" data-gid="${ds.id}">👤</button>
+                            <button class="buzz-btn" title="Zumbar al grupo" data-action="buzz" data-gid="${ds.id}" data-name="${esc(d.name)}">🔔</button>
+                        </div>
+                    `;
+                    el.querySelector('[data-action="buzz"]').onclick = (e) => {
+                        const b = e.currentTarget;
+                        buzzGroup(b.dataset.gid, b.dataset.name);
+                    };
+                    el.querySelector('[data-action="members"]').onclick = (e) => {
+                        showGroupMembers(e.currentTarget.dataset.gid);
+                    };
+                    els.groupsList.appendChild(el);
+                });
             });
         }
+
+        async function createGroup(name, memberUids) {
+            const user = auth.currentUser;
+            if (!user || !name.trim() || memberUids.length === 0) return;
+            const members = [{ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL || '' }];
+            try {
+                for (const muid of memberUids) {
+                    const snap = await getDocs(query(collection(db, "users"), where("__name__", "==", muid), limit(1)));
+                    snap.forEach(ds => {
+                        const d = ds.data();
+                        members.push({ uid: ds.id, displayName: d.displayName, photoURL: d.photoURL || '' });
+                    });
+                }
+            } catch (e) { log("Error loading members: " + e.message, 'error'); }
+
+            try {
+                await addDoc(collection(db, "groups"), {
+                    name: name.trim(),
+                    createdBy: user.uid,
+                    createdAt: serverTimestamp(),
+                    memberIds: members.map(m => m.uid),
+                    members
+                });
+                showToast("Grupo '" + name + "' creado!", 'success');
+            } catch (e) { showToast("Error al crear grupo", 'error'); log(e.message, 'error'); }
+        }
+
+        function buzzGroup(gid, gname) {
+            const user = auth.currentUser;
+            if (!user) return;
+            const group = myGroups.get(gid);
+            if (!group) return;
+            const targets = (group.members || []).filter(m => m.uid !== user.uid);
+            if (targets.length === 0) { showToast("No hay otros miembros en el grupo", 'info'); return; }
+            log("Zumbando al grupo: " + gname, 'info');
+
+            targets.forEach(t => {
+                addDoc(collection(db, "buzzes"), {
+                    toUid: t.uid, toName: t.displayName,
+                    from: user.displayName, fromUid: user.uid,
+                    timestamp: serverTimestamp(), deviceId: sessionDeviceId,
+                    groupId: gid, groupName: gname
+                }).catch(e => log("Group buzz error: " + e.message, 'error'));
+            });
+            showToast("🔔 Zumbido enviado a " + targets.length + " miembros de " + gname, 'success');
+            triggerShake();
+        }
+
+        function showGroupMembers(gid) {
+            const group = myGroups.get(gid);
+            if (!group) return;
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            const members = group.members || [];
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h3>👥 ${esc(group.name)}</h3>
+                    <div style="margin-bottom:0.5rem;font-size:0.8rem;color:var(--text-secondary)">${members.length} miembro(s)</div>
+                    <div class="member-list">
+                        ${members.map(m => `
+                            <div class="member-row">
+                                <img src="${esc(m.photoURL)}" class="avatar-xs" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
+                                <span style="font-size:0.85rem">${esc(m.displayName)}</span>
+                                ${m.uid === auth.currentUser?.uid ? '<span style="font-size:0.7rem;color:var(--text-muted)">(tú)</span>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" id="close-members">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            overlay.querySelector('#close-members').onclick = () => overlay.remove();
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            document.body.appendChild(overlay);
+        }
+
+        // ============================================================
+        // GROUPS UI
+        // ============================================================
+        $('create-group-btn').addEventListener('click', () => {
+            const user = auth.currentUser;
+            if (!user) return;
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h3>Crear Grupo</h3>
+                    <input id="group-name-input" type="text" placeholder="Nombre del grupo..." autocomplete="off">
+                    <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:0.5rem">Selecciona miembros:</div>
+                    <div class="member-list" id="group-member-list">
+                        <p class="empty-msg" style="padding:0.5rem 0">Sin contactos disponibles</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" id="cancel-group">Cancelar</button>
+                        <button class="btn btn-primary" id="create-group-submit">Crear</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const memberList = overlay.querySelector('#group-member-list');
+            const checkboxes = [];
+
+            if (contactUids.size > 0) {
+                memberList.innerHTML = '';
+                contactUids.forEach(uid => {
+                    const contacts = document.querySelectorAll('#contacts-list .item');
+                    let name = '';
+                    contacts.forEach(c => {
+                        if (c.dataset.uid === uid) name = c.querySelector('.name')?.textContent || uid;
+                    });
+                    if (!name) return;
+                    const row = document.createElement('div');
+                    row.className = 'member-row';
+                    row.innerHTML = `
+                        <label>
+                            <input type="checkbox" value="${uid}">
+                            <span>${esc(name)}</span>
+                        </label>
+                    `;
+                    memberList.appendChild(row);
+                    checkboxes.push(row.querySelector('input'));
+                });
+            }
+
+            overlay.querySelector('#cancel-group').onclick = () => overlay.remove();
+            overlay.querySelector('#create-group-submit').onclick = () => {
+                const name = overlay.querySelector('#group-name-input').value.trim();
+                const selected = checkboxes.filter(c => c.checked).map(c => c.value);
+                if (!name) { showToast("Ingresa un nombre para el grupo", 'error'); return; }
+                if (selected.length === 0) { showToast("Selecciona al menos un miembro", 'error'); return; }
+                overlay.remove();
+                createGroup(name, selected);
+            };
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+        });
 
         // ============================================================
         // CONTACT REQUESTS
         // ============================================================
-
         async function sendContactRequest(toUid, toName, toPhoto) {
             const user = auth.currentUser;
             if (!user) return;
-            if (sentRequestUids.has(toUid)) {
-                log("Ya enviaste una solicitud a " + toName, 'info');
-                return;
-            }
-            log("Enviando solicitud a " + toName, 'info');
+            if (sentRequestUids.has(toUid)) { log("Ya enviaste solicitud a " + toName, 'info'); return; }
             try {
                 await addDoc(collection(db, "contactRequests"), {
-                    from: user.uid,
-                    fromName: user.displayName,
-                    fromPhoto: user.photoURL || '',
-                    to: toUid,
-                    toName,
-                    toPhoto: toPhoto || '',
-                    status: "pending",
-                    timestamp: serverTimestamp()
+                    from: user.uid, fromName: user.displayName, fromPhoto: user.photoURL || '',
+                    to: toUid, toName, toPhoto: toPhoto || '', status: "pending", timestamp: serverTimestamp()
                 });
-                log("Solicitud enviada a " + toName, 'success');
                 showToast("Solicitud enviada a " + toName, 'success');
-            } catch (e) {
-                log("Error al enviar solicitud: " + e.message, 'error');
-                showToast("Error al enviar solicitud", 'error');
-            }
+            } catch (e) { showToast("Error al enviar solicitud", 'error'); log(e.message, 'error'); }
         }
 
-        async function acceptRequest(requestId, fromUid, fromName, fromPhoto) {
+        async function acceptRequest(rid, uid, name, photo) {
             const user = auth.currentUser;
             if (!user) return;
-            log("Aceptando solicitud de " + fromName, 'info');
             try {
-                await setDoc(doc(db, "contacts", user.uid, "list", fromUid), {
-                    displayName: fromName,
-                    photoURL: fromPhoto,
-                    addedAt: serverTimestamp()
-                });
-                await setDoc(doc(db, "contacts", fromUid, "list", user.uid), {
-                    displayName: user.displayName,
-                    photoURL: user.photoURL || '',
-                    addedAt: serverTimestamp()
-                });
-                await deleteDoc(doc(db, "contactRequests", requestId));
-                log("Contacto agregado: " + fromName, 'success');
-                showToast("¡" + fromName + " ahora es tu contacto!", 'success');
-            } catch (e) {
-                log("Error al aceptar solicitud: " + e.message, 'error');
-                showToast("Error al aceptar solicitud", 'error');
-            }
+                await setDoc(doc(db, "contacts", user.uid, "list", uid), { displayName: name, photoURL: photo, addedAt: serverTimestamp() });
+                await setDoc(doc(db, "contacts", uid, "list", user.uid), { displayName: user.displayName, photoURL: user.photoURL || '', addedAt: serverTimestamp() });
+                await deleteDoc(doc(db, "contactRequests", rid));
+                showToast("¡" + name + " ahora es tu contacto!", 'success');
+            } catch (e) { showToast("Error al aceptar solicitud", 'error'); log(e.message, 'error'); }
         }
-
-        async function rejectRequest(requestId) {
+        async function rejectRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); } catch (e) { log(e.message, 'error'); } }
+        async function cancelRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); } catch (e) { log(e.message, 'error'); } }
+        async function deleteContact(uid, name) {
+            const user = auth.currentUser;
+            if (!user) return;
             try {
-                await deleteDoc(doc(db, "contactRequests", requestId));
-                log("Solicitud rechazada", 'info');
-            } catch (e) {
-                log("Error al rechazar solicitud: " + e.message, 'error');
-            }
-        }
-
-        async function cancelRequest(requestId) {
-            try {
-                await deleteDoc(doc(db, "contactRequests", requestId));
-                log("Solicitud cancelada", 'info');
-            } catch (e) {
-                log("Error al cancelar solicitud: " + e.message, 'error');
-            }
+                await deleteDoc(doc(db, "contacts", user.uid, "list", uid));
+                await deleteDoc(doc(db, "contacts", uid, "list", user.uid));
+                showToast(name + " eliminado de contactos", 'info');
+            } catch (e) { showToast("Error al eliminar contacto", 'error'); log(e.message, 'error'); }
         }
 
         // ============================================================
-        // SEARCH
+        // SEARCH (debounced)
         // ============================================================
+        let searchTimer = null;
 
         async function handleSearch() {
             const term = els.searchInput.value.trim();
@@ -1180,86 +1073,49 @@
             await searchUsers(term);
         }
 
-        els.searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSearch(); });
-        document.getElementById('search-btn').addEventListener('click', handleSearch);
+        els.searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimer);
+            const term = els.searchInput.value.trim();
+            if (!term) { els.searchResults.innerHTML = '<p class="empty-msg">Busca usuarios por nombre o email.</p>'; return; }
+            searchTimer = setTimeout(() => handleSearch(), 300);
+        });
+        els.searchInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(searchTimer); handleSearch(); } });
+        $('search-btn').addEventListener('click', () => { clearTimeout(searchTimer); handleSearch(); });
 
         async function searchUsers(term) {
             const user = auth.currentUser;
             if (!user) return;
-            log("Buscando: " + term, 'info');
             els.searchResults.innerHTML = '<div class="spinner"></div>';
-
-            const foundUids = new Set();
-            const results = [];
-
+            const found = new Set(); const results = [];
             try {
-                const q1 = query(
-                    collection(db, "users"),
-                    where("displayName", ">=", term),
-                    where("displayName", "<=", term + "\uf8ff"),
-                    limit(15)
-                );
-                const snap1 = await getDocs(q1);
-                snap1.forEach(docSnap => {
-                    if (docSnap.id !== user.uid && !foundUids.has(docSnap.id)) {
-                        foundUids.add(docSnap.id);
-                        results.push({ uid: docSnap.id, ...docSnap.data() });
-                    }
+                const q1 = query(collection(db, "users"), where("displayName", ">=", term), where("displayName", "<=", term + "\uf8ff"), limit(15));
+                const s1 = await getDocs(q1);
+                s1.forEach(ds => {
+                    if (ds.id !== user.uid && !found.has(ds.id)) { found.add(ds.id); results.push({ uid: ds.id, ...ds.data() }); }
                 });
-
                 if (term.includes('@')) {
-                    const q2 = query(
-                        collection(db, "users"),
-                        where("email", "==", term.toLowerCase()),
-                        limit(5)
-                    );
-                    const snap2 = await getDocs(q2);
-                    snap2.forEach(docSnap => {
-                        if (docSnap.id !== user.uid && !foundUids.has(docSnap.id)) {
-                            foundUids.add(docSnap.id);
-                            results.push({ uid: docSnap.id, ...docSnap.data() });
-                        }
-                    });
+                    const q2 = query(collection(db, "users"), where("email", "==", term.toLowerCase()), limit(5));
+                    const s2 = await getDocs(q2);
+                    s2.forEach(ds => { if (ds.id !== user.uid && !found.has(ds.id)) { found.add(ds.id); results.push({ uid: ds.id, ...ds.data() }); } });
                 }
             } catch (e) {
-                log("Error en búsqueda: " + e.message, 'error');
-                els.searchResults.innerHTML = '<p class="empty-msg">Error al buscar. Intenta de nuevo.</p>';
-                return;
+                els.searchResults.innerHTML = '<p class="empty-msg">Error al buscar.</p>';
+                log(e.message, 'error'); return;
             }
-
-            if (results.length === 0) {
-                els.searchResults.innerHTML = `<p class="empty-msg">Sin resultados para "${escapeHtml(term)}".</p>`;
-                return;
-            }
-
+            if (results.length === 0) { els.searchResults.innerHTML = `<p class="empty-msg">Sin resultados para "${esc(term)}".</p>`; return; }
             els.searchResults.innerHTML = '';
             results.forEach(r => {
                 const isContact = contactUids.has(r.uid);
                 const isPending = sentRequestUids.has(r.uid);
-
                 const el = document.createElement('div');
                 el.className = 'item';
-
-                let actionHtml = '';
-                if (isContact) {
-                    actionHtml = `<span class="badge-label badge-contact">Contacto</span>`;
-                } else if (isPending) {
-                    actionHtml = `<span class="badge-label badge-pending">Pendiente</span>`;
-                } else {
-                    actionHtml = `<button class="btn-sm btn-add" data-uid="${escapeHtml(r.uid)}" data-name="${escapeHtml(r.displayName)}" data-photo="${escapeHtml(r.photoURL || '')}">➕</button>`;
-                }
-
-                el.innerHTML = `
-                    <img src="${escapeHtml(r.photoURL || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
-                    <span class="name">${escapeHtml(r.displayName)}</span>
-                    ${actionHtml}
-                `;
-
+                let act = '';
+                if (isContact) act = '<span class="badge-label badge-contact">Contacto</span>';
+                else if (isPending) act = '<span class="badge-label badge-pending">Pendiente</span>';
+                else act = `<button class="btn-sm btn-add" data-uid="${esc(r.uid)}" data-name="${esc(r.displayName)}" data-photo="${esc(r.photoURL || '')}">➕</button>`;
+                el.innerHTML = `<img src="${esc(r.photoURL || '')}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'"><span class="name">${esc(r.displayName)}</span>${act}`;
                 const addBtn = el.querySelector('.btn-add');
-                if (addBtn) {
-                    addBtn.onclick = () => sendContactRequest(r.uid, r.displayName, r.photoURL || '');
-                }
-
+                if (addBtn) addBtn.onclick = () => sendContactRequest(r.uid, r.displayName, r.photoURL || '');
                 els.searchResults.appendChild(el);
             });
         }
@@ -1267,113 +1123,148 @@
         // ============================================================
         // BUZZ
         // ============================================================
-
         async function sendBuzz(toUid, toName) {
             const user = auth.currentUser;
             if (!user) return;
-            log("Enviando zumbido a " + toName, 'info');
             try {
                 await addDoc(collection(db, "buzzes"), {
-                    toUid,
-                    toName,
-                    from: user.displayName,
-                    fromUid: user.uid,
-                    timestamp: serverTimestamp(),
-                    deviceId: sessionDeviceId
+                    toUid, toName, from: user.displayName, fromUid: user.uid,
+                    timestamp: serverTimestamp(), deviceId: sessionDeviceId
                 });
                 showToast("🔔 Zumbido enviado a " + toName, 'success');
                 triggerShake();
-            } catch (e) {
-                log("Error al enviar zumbido: " + e.message, 'error');
-                showToast("Error al enviar zumbido", 'error');
-            }
+            } catch (e) { showToast("Error al enviar zumbido", 'error'); log(e.message, 'error'); }
         }
 
         function triggerShake() {
-            const app = document.getElementById('app');
-            app.classList.remove('shake');
-            void app.offsetWidth;
-            app.classList.add('shake');
-            setTimeout(() => app.classList.remove('shake'), 500);
+            const el = document.getElementById('app');
+            el.classList.remove('shake');
+            void el.offsetWidth;
+            el.classList.add('shake');
+            setTimeout(() => el.classList.remove('shake'), 500);
         }
 
-        function playSound() {
+        function playSound(type) {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.3);
-            } catch (e) {
-                // Audio not available
-            }
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                if (type === 'chime') {
+                    [523.25, 659.25, 783.99].forEach((f, i) => {
+                        const o = ctx.createOscillator(); const g = ctx.createGain();
+                        o.type = 'sine'; o.frequency.setValueAtTime(f, now);
+                        g.gain.setValueAtTime(0.001, now);
+                        g.gain.linearRampToValueAtTime(0.12 - i * 0.03, now + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + 0.6 + i * 0.1);
+                        o.connect(g); g.connect(ctx.destination);
+                        o.start(now + i * 0.08); o.stop(now + 1);
+                    });
+                } else if (type === 'alert') {
+                    [880, 660, 880].forEach((f, i) => {
+                        const o = ctx.createOscillator(); const g = ctx.createGain();
+                        o.type = 'square'; o.frequency.setValueAtTime(f, now);
+                        g.gain.setValueAtTime(0.04, now + i * 0.12);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.1);
+                        o.connect(g); g.connect(ctx.destination);
+                        o.start(now + i * 0.12); o.stop(now + i * 0.12 + 0.1);
+                    });
+                } else {
+                    [523.25, 659.25].forEach(f => {
+                        const o = ctx.createOscillator(); const g = ctx.createGain();
+                        o.type = 'sine'; o.frequency.setValueAtTime(f, now);
+                        g.gain.setValueAtTime(0.001, now);
+                        g.gain.linearRampToValueAtTime(0.15, now + 0.02);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                        o.connect(g); g.connect(ctx.destination);
+                        o.start(now); o.stop(now + 0.8);
+                    });
+                }
+            } catch (e) {}
         }
 
         // ============================================================
         // BROWSER NOTIFICATION
         // ============================================================
-
-        function showBrowserNotification(from) {
+        function showBrowserNotification(from, fromUid) {
             if (!("Notification" in window) || Notification.permission !== "granted") return;
             try {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
                         body: from + " te ha enviado un zumbido",
-                        icon: "icon-192.svg",
-                        badge: "icon-192.svg",
-                        vibrate: [200, 100, 200],
-                        requireInteraction: true,
-                        tag: "zumbido-" + Date.now()
+                        icon: "icon-192.svg", badge: "icon-192.svg",
+                        vibrate: [200, 100, 200], requireInteraction: true,
+                        tag: "buzz-" + Date.now(),
+                        data: { fromUid: fromUid || '', fromName: from },
+                        actions: [
+                            { action: 'reply', title: '🔔 Responder' },
+                            { action: 'open', title: 'Abrir' }
+                        ]
                     });
                 });
             } catch (e) {
-                new Notification("¡ZUMBIDO!", {
-                    body: from + " te ha enviado un zumbido",
-                    icon: "icon-192.svg"
-                });
+                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" });
             }
         }
 
         // ============================================================
+        // PULL-TO-REFRESH
+        // ============================================================
+        (function setupPtr() {
+            const pane = $('tab-contacts');
+            let startY = 0, pulling = false;
+            pane.addEventListener('touchstart', (e) => {
+                if (pane.scrollTop <= 0) { startY = e.touches[0].clientY; pulling = true; }
+            }, { passive: true });
+            pane.addEventListener('touchmove', (e) => {
+                if (!pulling) return;
+                const diff = e.touches[0].clientY - startY;
+                if (diff > 60) {
+                    els.ptrIndicator.textContent = '⟳ Actualizando...';
+                    els.ptrIndicator.classList.add('active');
+                } else if (diff > 20) {
+                    els.ptrIndicator.textContent = '↓ Suelta para actualizar';
+                    els.ptrIndicator.classList.add('active');
+                } else {
+                    els.ptrIndicator.classList.remove('active');
+                }
+            }, { passive: true });
+            pane.addEventListener('touchend', () => {
+                if (pulling && els.ptrIndicator.classList.contains('active')) {
+                    const txt = els.ptrIndicator.textContent;
+                    if (txt.includes('Actualizando')) {
+                        const user = auth.currentUser;
+                        if (user) {
+                            if (unsubs.contacts) unsubs.contacts();
+                            listenContacts(user);
+                            setTimeout(() => els.ptrIndicator.classList.remove('active'), 500);
+                            showToast('Contactos actualizados', 'success');
+                        }
+                    }
+                }
+                pulling = false;
+            }, { passive: true });
+        })();
+
+        // ============================================================
         // HELPERS
         // ============================================================
-
-        function escapeHtml(str) {
-            if (!str) return '';
-            const d = document.createElement('div');
-            d.textContent = str;
-            return d.innerHTML;
-        }
+        function esc(str) { if (!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
         // ============================================================
         // SERVICE WORKER
         // ============================================================
-
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(() => log("Service Worker registrado.", 'success'))
-                    .catch(err => log("Error SW: " + err.message, 'error'));
+                    .then(() => log("SW registrado", 'success'))
+                    .catch(err => log("SW error: " + err.message, 'error'));
             });
         }
-
-        // ============================================================
-        // NOTIFICATION PERMISSION
-        // ============================================================
 
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
         }
 
         log("Zumbido 2.0 iniciado", 'info');
-        console.log("Zumbido 2.0 - Disfruta!");
     </script>
 </body>
 </html>
