@@ -674,8 +674,8 @@
                 const custom = getContactSound(data.fromUid);
                 if (custom !== 'none') playSound(custom);
             }
-            showBrowserNotification(data.from, data.fromUid);
             if (document.visibilityState !== 'visible') {
+                showBrowserNotification(data.from, data.fromUid);
                 updateBadge(unreadCount + 1);
             }
         }
