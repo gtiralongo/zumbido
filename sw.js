@@ -1,15 +1,11 @@
-self.addEventListener('push', (event) => {
-    const data = event.data.json();
-    self.registration.showNotification(data.title, {
-        body: data.body,
-        icon: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Zumbido',
-        vibrate: [200, 100, 200]
-    });
-});
-
-self.addEventListener('notificationclick', (event) => {
-    event.notification.close();
-    event.waitUntil(
-        clients.openWindow('/')
-    );
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      for (const c of list) {
+        if ('focus' in c) return c.focus();
+      }
+      return clients.openWindow('/');
+    })
+  );
 });
