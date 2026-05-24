@@ -14,6 +14,13 @@ service cloud.firestore {
       match /list/{contactId} {
         allow read: if request.auth.uid == uid;
         allow write: if request.auth.uid == uid;
+        allow create: if request.auth.uid == contactId
+          && request.resource.data.keys().hasAll(['_requestId'])
+          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.status == "pending"
+          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.from == uid
+          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.to == contactId;
+        allow delete: if request.auth.uid == contactId
+          && !exists(/databases/$(database)/documents/contacts/$(contactId)/list/$(uid));
       }
     }
 
