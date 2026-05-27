@@ -628,8 +628,6 @@
         function updateSendSoundUI() {
             els.sendSoundBtn.textContent = getSendSoundIcon();
         }
-        // Restore persisted send sound
-        if (sendSound === 'custom' && !localStorage.getItem('zumbido-custom-sound-' + sendSoundId)) { setSendSound('bell', '', ''); }
         updateSendSoundUI();
 
         function showSoundDropdown() {
@@ -653,12 +651,10 @@
                 html += '<div class="sd-section-title">Tus sonidos</div>';
                 customSoundsList.forEach(s => {
                     const active = sendSound === 'custom' && sendSoundId === s.id ? ' style="border-color:var(--primary);background:var(--primary-light);"' : '';
-                    const hasAudio = localStorage.getItem('zumbido-custom-sound-' + s.id);
                     html += `<div class="sound-option"${active} style="position:relative">
                         <button class="sound-option" data-type="custom" data-id="${esc(s.id)}" data-name="${esc(s.name)}" style="flex:1;display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;background:none;border:none;cursor:pointer;text-align:left;color:inherit;font:inherit">
                             <span class="so-icon">🎤</span>
                             <span class="so-name">${esc(s.name)}</span>
-                            ${!hasAudio ? '<span class="so-dur" style="color:var(--danger)">sin audio</span>' : ''}
                             ${(sendSound === 'custom' && sendSoundId === s.id) ? '<span class="so-badge">✓</span>' : ''}
                             ${s.duration ? '<span class="so-dur">' + Math.round(s.duration) + 's</span>' : ''}
                         </button>
@@ -723,8 +719,20 @@
             unsubs.customSounds = onSnapshot(q, (snap) => {
                 customSoundsList = [];
                 snap.forEach(ds => {
-                    customSoundsList.push({ id: ds.id, ...ds.data() });
+                    const data = ds.data();
+                    if (!data.audioData && snap.docChanges().some(c => c.doc.id === ds.id && c.type === 'added')) {
+                        deleteDoc(ds.ref).catch(() => {});
+                        return;
+                    }
+                    customSoundsList.push({ id: ds.id, ...data });
                 });
+                // Clean up orphaned localStorage keys from old system
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('zumbido-custom-sound-')) {
+                        localStorage.removeItem(key);
+                    }
+                }
                 if (sendSound === 'custom' && !customSoundsList.some(s => s.id === sendSoundId)) {
                     setSendSound('bell', '', '');
                 }
@@ -1199,7 +1207,8 @@
 
             let dataUrl = '';
             if (soundType === 'custom' && soundId) {
-                dataUrl = localStorage.getItem('zumbido-custom-sound-' + soundId) || '';
+                const cs = customSoundsList.find(s => s.id === soundId);
+                dataUrl = (cs && cs.audioData) || '';
                 if (!dataUrl) soundType = 'bell';
             }
 
@@ -1428,8 +1437,8 @@
                 };
                 if (soundName) docData.soundName = soundName;
                 if (soundType === 'custom' && soundId) {
-                    const dataUrl = localStorage.getItem('zumbido-custom-sound-' + soundId);
-                    if (dataUrl) docData.soundData = dataUrl;
+                    const cs = customSoundsList.find(s => s.id === soundId);
+                    if (cs && cs.audioData) docData.soundData = cs.audioData;
                     else docData.soundType = 'bell';
                 }
                 await addDoc(collection(db, "buzzes"), docData);
@@ -1692,13 +1701,12 @@
             const user = auth.currentUser;
             if (!user) throw new Error("Usuario no autenticado");
             const soundRef = doc(collection(db, "customSounds"));
-            const soundId = soundRef.id;
             const dataUrl = await blobToDataURL(blob);
-            localStorage.setItem('zumbido-custom-sound-' + soundId, dataUrl);
             await setDoc(soundRef, {
                 uid: user.uid,
                 name: name,
                 duration: duration || 0,
+                audioData: dataUrl,
                 createdAt: serverTimestamp()
             });
             showToast("Sonido '" + name + "' guardado!", 'success');
@@ -1709,7 +1717,6 @@
             if (!user) return;
             try {
                 await deleteDoc(doc(db, "customSounds", soundId));
-                localStorage.removeItem('zumbido-custom-sound-' + soundId);
                 if (sendSound === 'custom' && sendSoundId === soundId) {
                     setSendSound('bell', '', '');
                 }
