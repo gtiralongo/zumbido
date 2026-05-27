@@ -495,6 +495,7 @@
         let sentRequestUids = new Set();
         let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null };
         let contactStatusUnsubs = new Map();
+        let contactStatusMap = new Map();
         let unreadCount = 0;
         let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
         let buzzesCache = [];
@@ -774,10 +775,26 @@
         function listenContactStatus(uid) {
             const unsub = onSnapshot(doc(db, "users", uid), (snap) => {
                 const d = snap.data();
+                const online = d && d.online ? true : false;
+                contactStatusMap.set(uid, online);
                 const dot = $('sdot-' + uid);
-                if (dot) dot.className = 'status-dot ' + (d && d.online ? 'online' : 'offline');
+                if (dot) dot.className = 'status-dot ' + (online ? 'online' : 'offline');
+                sortContactsDOM();
             });
             contactStatusUnsubs.set(uid, unsub);
+        }
+
+        function sortContactsDOM() {
+            const items = Array.from(els.contactsList.querySelectorAll('.item[data-uid]'));
+            if (items.length < 2) return;
+            items.sort((a, b) => {
+                const aOn = contactStatusMap.get(a.dataset.uid) ?? false;
+                const bOn = contactStatusMap.get(b.dataset.uid) ?? false;
+                if (aOn && !bOn) return -1;
+                if (!aOn && bOn) return 1;
+                return 0;
+            });
+            items.forEach(el => els.contactsList.appendChild(el));
         }
 
         function cleanupContactStatus() {
@@ -788,6 +805,26 @@
         function listenIncoming(user) {
             const q = query(collection(db, "contactRequests"), where("to", "==", user.uid), where("status", "==", "pending"));
             unsubs.incoming = onSnapshot(q, (snap) => {
+                snap.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const d = change.doc.data();
+                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
+                        if (Date.now() - t < 15000) {
+                            log("Nueva solicitud de " + d.fromName, 'info');
+                            showToast("📨 " + d.fromName + " te envió una solicitud", 'success');
+                            if (soundEnabled) playSound('default');
+                            if (document.visibilityState !== 'visible') {
+                                navigator.serviceWorker.ready.then(reg => {
+                                    reg.showNotification("Nueva solicitud", {
+                                        body: d.fromName + " quiere ser tu contacto",
+                                        icon: "icon-192.svg", tag: "request-" + change.doc.id
+                                    });
+                                }).catch(() => {});
+                            }
+                        }
+                    }
+                });
+
                 els.requestsList.innerHTML = '';
                 let count = 0;
                 if (snap.empty) { els.requestsSection.classList.add('hidden'); els.requestsBadge.classList.add('hidden'); return; }
@@ -1331,10 +1368,15 @@
         const installBtn = $('install-btn');
         const installClose = $('install-close');
 
+        function isMobile() {
+            return window.matchMedia('(max-width: 768px) and (pointer: coarse)').matches
+                || /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (!localStorage.getItem('zumbido-install-dismissed')) {
+            if (isMobile() && !localStorage.getItem('zumbido-install-dismissed')) {
                 installBanner.classList.add('show');
             }
         });
