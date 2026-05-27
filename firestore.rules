@@ -44,5 +44,10 @@ service cloud.firestore {
       allow update: if request.auth != null && resource.data.memberIds.hasAny([request.auth.uid]);
       allow delete: if request.auth != null && resource.data.createdBy == request.auth.uid;
     }
+
+    match /customSounds/{id} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.uid;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
   }
 }

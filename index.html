@@ -339,6 +339,65 @@
         }
         .ptr-indicator.active { display: block; }
 
+        .sound-dropdown {
+            position: absolute; top: 100%; right: 0; z-index: 20;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow-lg);
+            min-width: 220px; max-height: 60vh; overflow-y: auto;
+            padding: 0.5rem; margin-top: 4px; color: var(--text);
+        }
+        .sound-dropdown .sd-section-title {
+            font-size: 0.7rem; font-weight: 700; color: var(--text);
+            text-transform: uppercase; letter-spacing: 0.04em;
+            padding: 0.3rem 0.4rem; margin-top: 0.25rem; opacity: 0.75;
+        }
+        .sound-dropdown .sd-section-title:first-child { margin-top: 0; }
+        .sound-dropdown .sound-option { color: var(--text); }
+        .sound-dropdown .sound-option .so-name { font-weight: 600; color: var(--text); }
+        .sound-dropdown .sound-option .so-dur { color: var(--text); opacity: 0.5; }
+        .sound-dropdown .so-badge { color: var(--primary); font-weight: 700; }
+        .sound-dropdown .sd-del {
+            background: none; border: none; cursor: pointer; font-size: 0.75rem;
+            color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 4px;
+            transition: all var(--transition); flex-shrink: 0;
+        }
+        .sound-dropdown .sd-del:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+
+        .sound-option {
+            display: flex; align-items: center; gap: 0.65rem;
+            padding: 0.6rem 0.75rem; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); cursor: pointer;
+            transition: all var(--transition); background: var(--surface);
+            margin-bottom: 0.35rem; width: 100%; text-align: left;
+        }
+        .sound-option:hover { border-color: var(--primary); background: var(--primary-light); }
+        .sound-option .so-icon { font-size: 1.2rem; flex-shrink: 0; }
+        .sound-option .so-name { font-size: 0.85rem; font-weight: 500; flex: 1; }
+        .sound-option .so-dur { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
+        .sound-option .so-badge { font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; background: var(--primary-light); color: var(--primary); flex-shrink: 0; }
+        .sound-picker-section { margin-bottom: 0.5rem; }
+        .sound-picker-section .sps-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.3rem; }
+
+        .recorder-bar {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem; background: var(--surface-hover);
+            border-radius: var(--radius-sm); margin-bottom: 0.5rem;
+        }
+        .recorder-bar .rec-btn {
+            width: 44px; height: 44px; border-radius: 50%; border: none;
+            background: var(--danger); color: white; font-size: 1rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all var(--transition); flex-shrink: 0;
+        }
+        .recorder-bar .rec-btn.recording { animation: pulse 1s infinite; }
+        .recorder-bar .rec-btn:active { transform: scale(0.95); }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); } 100% { box-shadow: 0 0 0 10px rgba(239,68,68,0); } }
+        .recorder-bar .rec-timer { font-size: 0.9rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 3.5rem; }
+        .recorder-bar .rec-status { font-size: 0.8rem; color: var(--text-secondary); flex: 1; }
+        .recorder-bar .rec-done { color: var(--success); font-size: 0.8rem; }
+
+        .modal-scroll { max-height: 60vh; overflow-y: auto; margin-bottom: 0.5rem; }
+
         @media (min-width: 640px) {
             #app { max-width: 560px; }
             body { align-items: center; padding: 1rem; }
@@ -385,6 +444,7 @@
                 </div>
                 <div class="header-right">
                     <button id="sound-toggle" class="icon-btn" title="Sonido">🔊</button>
+                    <button id="send-sound-btn" class="icon-btn" title="Sonido al enviar">🔔</button>
                     <button id="theme-toggle" class="icon-btn" title="Tema">🌙</button>
                     <button id="logout-btn" class="icon-btn" title="Desconectar">✕</button>
                 </div>
@@ -493,12 +553,22 @@
         const sessionDeviceId = Math.random().toString(36).substring(7);
         let contactUids = new Set();
         let sentRequestUids = new Set();
-        let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null };
+        let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null, customSounds: null };
         let contactStatusUnsubs = new Map();
         let contactStatusMap = new Map();
         let unreadCount = 0;
         let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
         let buzzesCache = [];
+        let customSoundsList = [];
+        let sendSound = localStorage.getItem('zumbido-send-sound') || 'bell';
+        let sendSoundId = localStorage.getItem('zumbido-send-sound-id') || '';
+        let sendSoundName = localStorage.getItem('zumbido-send-sound-name') || '';
+
+        const PREDEFINED_SOUNDS = [
+            { id: 'bell', name: 'Campana', icon: '🔔' },
+            { id: 'chime', name: 'Chime', icon: '🎵' },
+            { id: 'alert', name: 'Alerta', icon: '📢' }
+        ];
 
         const $ = (id) => document.getElementById(id);
         const els = {
@@ -509,7 +579,7 @@
             searchInput: $('search-input'), searchResults: $('search-results'),
             requestsBadge: $('requests-badge'), historyList: $('history-list'),
             groupsList: $('groups-list'), soundToggle: $('sound-toggle'),
-            themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
+            sendSoundBtn: $('send-sound-btn'), themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
             ptrIndicator: $('ptr-indicator')
         };
 
@@ -539,13 +609,128 @@
             updateSoundUI();
         });
 
-        function getContactSound(uid) {
-            return localStorage.getItem('zumbido-sound-' + uid) || 'default';
+        function setSendSound(type, id, name) {
+            sendSound = type;
+            sendSoundId = id || '';
+            sendSoundName = name || '';
+            localStorage.setItem('zumbido-send-sound', sendSound);
+            localStorage.setItem('zumbido-send-sound-id', sendSoundId);
+            localStorage.setItem('zumbido-send-sound-name', sendSoundName);
+            updateSendSoundUI();
         }
-        function setContactSound(uid, val) {
-            localStorage.setItem('zumbido-sound-' + uid, val);
+
+        function getSendSoundIcon() {
+            if (sendSound === 'custom' && sendSoundName) return '🎤';
+            const ps = PREDEFINED_SOUNDS.find(s => s.id === sendSound);
+            return ps ? ps.icon : '🔔';
         }
-        const SOUND_LABELS = { default: '🔔', bell: '🔔', chime: '🎵', alert: '📢', none: '🔇' };
+
+        function updateSendSoundUI() {
+            els.sendSoundBtn.textContent = getSendSoundIcon();
+        }
+        // Restore persisted send sound
+        if (sendSound === 'custom' && !localStorage.getItem('zumbido-custom-sound-' + sendSoundId)) { setSendSound('bell', '', ''); }
+        updateSendSoundUI();
+
+        function showSoundDropdown() {
+            const existing = document.querySelector('.sound-dropdown');
+            if (existing) { existing.remove(); return; }
+
+            const div = document.createElement('div');
+            div.className = 'sound-dropdown';
+
+            let html = '<div class="sd-section-title">Sonido al enviar</div>';
+            PREDEFINED_SOUNDS.forEach(s => {
+                const active = sendSound === s.id ? ' style="border-color:var(--primary);background:var(--primary-light);"' : '';
+                html += `<button class="sound-option"${active} data-type="${s.id}">
+                    <span class="so-icon">${s.icon}</span>
+                    <span class="so-name">${s.name}</span>
+                    ${sendSound === s.id ? '<span class="so-badge">✓</span>' : ''}
+                </button>`;
+            });
+
+            if (customSoundsList.length > 0) {
+                html += '<div class="sd-section-title">Tus sonidos</div>';
+                customSoundsList.forEach(s => {
+                    const active = sendSound === 'custom' && sendSoundId === s.id ? ' style="border-color:var(--primary);background:var(--primary-light);"' : '';
+                    const hasAudio = localStorage.getItem('zumbido-custom-sound-' + s.id);
+                    html += `<div class="sound-option"${active} style="position:relative">
+                        <button class="sound-option" data-type="custom" data-id="${esc(s.id)}" data-name="${esc(s.name)}" style="flex:1;display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;background:none;border:none;cursor:pointer;text-align:left;color:inherit;font:inherit">
+                            <span class="so-icon">🎤</span>
+                            <span class="so-name">${esc(s.name)}</span>
+                            ${!hasAudio ? '<span class="so-dur" style="color:var(--danger)">sin audio</span>' : ''}
+                            ${(sendSound === 'custom' && sendSoundId === s.id) ? '<span class="so-badge">✓</span>' : ''}
+                            ${s.duration ? '<span class="so-dur">' + Math.round(s.duration) + 's</span>' : ''}
+                        </button>
+                        <button class="sd-del" data-sid="${esc(s.id)}" title="Eliminar sonido">✕</button>
+                    </div>`;
+                });
+            }
+
+            html += `<button class="sound-option" id="sd-new" style="border-style:dashed;border-color:var(--text-muted);justify-content:center">
+                <span style="font-size:0.8rem">+ Nuevo sonido</span>
+            </button>`;
+
+            div.innerHTML = html;
+
+            div.querySelectorAll('.sound-option[data-type]').forEach(btn => {
+                btn.onclick = () => {
+                    const type = btn.dataset.type;
+                    const id = btn.dataset.id || '';
+                    const name = btn.dataset.name || '';
+                    setSendSound(type, id, name);
+                    div.remove();
+                };
+            });
+
+            const newBtn = div.querySelector('#sd-new');
+            if (newBtn) {
+                newBtn.onclick = () => {
+                    div.remove();
+                    showNewSoundModal();
+                };
+            }
+
+            div.querySelectorAll('.sd-del').forEach(btn => {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm("¿Eliminar este sonido personalizado?")) {
+                        deleteCustomSound(btn.dataset.sid);
+                        div.remove();
+                    }
+                };
+            });
+
+            const header = document.querySelector('.app-header');
+            header.appendChild(div);
+
+            function closeOnOutside(e) {
+                if (!div.contains(e.target) && e.target !== els.sendSoundBtn) {
+                    div.remove();
+                    document.removeEventListener('click', closeOnOutside);
+                }
+            }
+            setTimeout(() => document.addEventListener('click', closeOnOutside), 0);
+        }
+
+        els.sendSoundBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showSoundDropdown();
+        });
+
+        function listenCustomSounds(user) {
+            const q = query(collection(db, "customSounds"), where("uid", "==", user.uid));
+            unsubs.customSounds = onSnapshot(q, (snap) => {
+                customSoundsList = [];
+                snap.forEach(ds => {
+                    customSoundsList.push({ id: ds.id, ...ds.data() });
+                });
+                if (sendSound === 'custom' && !customSoundsList.some(s => s.id === sendSoundId)) {
+                    setSendSound('bell', '', '');
+                }
+                updateSendSoundUI();
+            }, (e) => log("CustomSounds error: " + e.message, 'error'));
+        }
 
         // ============================================================
         // LOG
@@ -598,8 +783,9 @@
 
                 Object.values(unsubs).forEach(u => { if (u) u(); });
                 cleanupContactStatus();
+                customSoundsList = [];
                 listenContacts(user); listenIncoming(user); listenOutgoing(user); listenBuzzes(user);
-                listenHistory(user); listenGroups(user); setupFCM(user);
+                listenHistory(user); listenGroups(user); listenCustomSounds(user); setupFCM(user);
                 checkReplyParam();
             } else {
                 Object.values(unsubs).forEach(u => { if (u) u(); });
@@ -649,7 +835,7 @@
             const name = p.get('replyName');
             if (uid && name) {
                 window.history.replaceState({}, '', '/');
-                setTimeout(() => sendBuzz(uid, name), 500);
+                setTimeout(() => sendBuzz(uid, name, 'bell'), 500);
                 showToast("🔔 Devolviendo zumbido a " + name, 'buzz');
             }
         }
@@ -697,14 +883,20 @@
         // ============================================================
         function handleBuzzArrival(data) {
             log("¡ZUMBIDO de " + data.from + "!", 'buzz');
-            showToast("🔔 " + data.from + " te ha enviado un zumbido", 'buzz');
+            const soundLabel = data.soundName ? ' 🎵' + esc(data.soundName) : '';
+            showToast("🔔 " + data.from + " te ha enviado un zumbido" + soundLabel, 'buzz');
             triggerShake();
             if (soundEnabled) {
-                const custom = getContactSound(data.fromUid);
-                if (custom !== 'none') playSound(custom);
+                if (data.soundType === 'custom' && data.soundData) {
+                    playCustomSound(data.soundData);
+                } else if (data.soundType && data.soundType !== 'none') {
+                    playSound(data.soundType);
+                } else {
+                    playSound('bell');
+                }
             }
             if (document.visibilityState !== 'visible') {
-                showBrowserNotification(data.from, data.fromUid);
+                showBrowserNotification(data.from, data.fromUid, soundLabel);
                 updateBadge(unreadCount + 1);
             }
         }
@@ -732,32 +924,17 @@
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.dataset.uid = c.id;
-                    const sound = getContactSound(c.id);
                     el.innerHTML = `
                         <div class="status-dot offline" id="sdot-${c.id}"></div>
                         <img src="${esc(c.photo)}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
                         <span class="name">${esc(c.name)}</span>
                         <div class="item-actions">
-                            <button class="icon-btn" style="font-size:0.8rem;width:28px;height:28px" title="Sonido: ${sound}" data-action="sound" data-uid="${c.id}">${SOUND_LABELS[sound] || '🔔'}</button>
                             <button class="buzz-btn" title="¡Zumbar!" data-action="buzz">🔔</button>
                             <button class="icon-btn" style="color:var(--text-muted);font-size:0.8rem;width:28px;height:28px" title="Eliminar contacto" data-action="delete" data-uid="${c.id}" data-name="${esc(c.name)}">✕</button>
                         </div>
                     `;
 
-                    el.querySelector('[data-action="buzz"]').onclick = () => sendBuzz(c.id, c.name);
-
-                    el.querySelector('[data-action="sound"]').onclick = (e) => {
-                        const btn = e.currentTarget;
-                        const uid = btn.dataset.uid;
-                        const cycle = ['default', 'bell', 'chime', 'alert', 'none'];
-                        const cur = getContactSound(uid);
-                        const idx = cycle.indexOf(cur);
-                        const next = cycle[(idx + 1) % cycle.length];
-                        setContactSound(uid, next);
-                        btn.textContent = SOUND_LABELS[next];
-                        btn.title = 'Sonido: ' + next;
-                        showToast("Sonido: " + next, 'info');
-                    };
+                    el.querySelector('[data-action="buzz"]').onclick = () => sendBuzz(c.id, c.name, sendSound, sendSoundId || undefined, sendSoundName || undefined);
 
                     el.querySelector('[data-action="delete"]').onclick = (e) => {
                         const btn = e.currentTarget;
@@ -893,7 +1070,7 @@
                         const d = change.doc.data();
                         const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
                         if (t > start - 10000 && d.deviceId !== sessionDeviceId) {
-                            handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName });
+                            handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName, soundType: d.soundType, soundData: d.soundData, soundName: d.soundName });
                         }
                     }
                 });
@@ -975,7 +1152,7 @@
                     `;
                     el.querySelector('[data-action="buzz"]').onclick = (e) => {
                         const b = e.currentTarget;
-                        buzzGroup(b.dataset.gid, b.dataset.name);
+                        buzzGroup(b.dataset.gid, b.dataset.name, sendSound, sendSoundId || undefined, sendSoundName || undefined);
                     };
                     el.querySelector('[data-action="members"]').onclick = (e) => {
                         showGroupMembers(e.currentTarget.dataset.gid);
@@ -1011,7 +1188,7 @@
             } catch (e) { showToast("Error al crear grupo", 'error'); log(e.message, 'error'); }
         }
 
-        function buzzGroup(gid, gname) {
+        function buzzGroup(gid, gname, soundType, soundId, soundName) {
             const user = auth.currentUser;
             if (!user) return;
             const group = myGroups.get(gid);
@@ -1020,15 +1197,26 @@
             if (targets.length === 0) { showToast("No hay otros miembros en el grupo", 'info'); return; }
             log("Zumbando al grupo: " + gname, 'info');
 
+            let dataUrl = '';
+            if (soundType === 'custom' && soundId) {
+                dataUrl = localStorage.getItem('zumbido-custom-sound-' + soundId) || '';
+                if (!dataUrl) soundType = 'bell';
+            }
+
             targets.forEach(t => {
-                addDoc(collection(db, "buzzes"), {
+                const docData = {
                     toUid: t.uid, toName: t.displayName,
                     from: user.displayName, fromUid: user.uid,
                     timestamp: serverTimestamp(), deviceId: sessionDeviceId,
-                    groupId: gid, groupName: gname
-                }).catch(e => log("Group buzz error: " + e.message, 'error'));
+                    groupId: gid, groupName: gname,
+                    soundType: soundType || 'bell'
+                };
+                if (dataUrl) docData.soundData = dataUrl;
+                if (soundName) docData.soundName = soundName;
+                addDoc(collection(db, "buzzes"), docData).catch(e => log("Group buzz error: " + e.message, 'error'));
             });
-            showToast("🔔 Zumbido enviado a " + targets.length + " miembros de " + gname, 'success');
+            const label = soundName ? ' 🎵' + soundName : '';
+            showToast("🔔 Zumbido enviado a " + targets.length + " miembros de " + gname + label, 'success');
             triggerShake();
         }
 
@@ -1229,15 +1417,24 @@
         // ============================================================
         // BUZZ
         // ============================================================
-        async function sendBuzz(toUid, toName) {
+        async function sendBuzz(toUid, toName, soundType, soundId, soundName) {
             const user = auth.currentUser;
             if (!user) return;
             try {
-                await addDoc(collection(db, "buzzes"), {
+                const docData = {
                     toUid, toName, from: user.displayName, fromUid: user.uid,
-                    timestamp: serverTimestamp(), deviceId: sessionDeviceId
-                });
-                showToast("🔔 Zumbido enviado a " + toName, 'success');
+                    timestamp: serverTimestamp(), deviceId: sessionDeviceId,
+                    soundType: soundType || 'bell'
+                };
+                if (soundName) docData.soundName = soundName;
+                if (soundType === 'custom' && soundId) {
+                    const dataUrl = localStorage.getItem('zumbido-custom-sound-' + soundId);
+                    if (dataUrl) docData.soundData = dataUrl;
+                    else docData.soundType = 'bell';
+                }
+                await addDoc(collection(db, "buzzes"), docData);
+                const label = soundName ? ' 🎵' + soundName : '';
+                showToast("🔔 Zumbido enviado a " + toName + label, 'success');
                 triggerShake();
             } catch (e) { showToast("Error al enviar zumbido", 'error'); log(e.message, 'error'); }
         }
@@ -1287,10 +1484,243 @@
             } catch (e) {}
         }
 
+        function playCustomSound(url) {
+            try {
+                const audio = new Audio(url);
+                audio.volume = 0.6;
+                audio.play().catch(() => playSound('bell'));
+            } catch (e) { playSound('bell'); }
+        }
+
+        function showNewSoundModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h3>+ Nuevo sonido</h3>
+                    <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+                        <button class="btn btn-outline" id="ns-upload" style="flex:1">📁 Subir audio</button>
+                        <button class="btn btn-outline" id="ns-record" style="flex:1">🎙️ Grabar</button>
+                    </div>
+                    <div id="ns-content">
+                        <p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">Selecciona subir o grabar un audio</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-cancel" id="ns-cancel">Cancelar</button>
+                    </div>
+                </div>
+            `;
+            overlay.querySelector('#ns-cancel').onclick = () => overlay.remove();
+            overlay.querySelector('#ns-upload').onclick = () => showUploadUI(overlay);
+            overlay.querySelector('#ns-record').onclick = () => showRecordUI(overlay);
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+            document.body.appendChild(overlay);
+        }
+
+        function showUploadUI(overlay) {
+            const content = overlay.querySelector('#ns-content');
+            content.innerHTML = `
+                <input type="file" id="audio-file" accept="audio/*" style="margin-bottom:0.5rem">
+                <input type="text" id="audio-name" placeholder="Nombre del sonido..." autocomplete="off">
+                <div id="audio-preview" style="margin-bottom:0.5rem;display:none"></div>
+                <button class="btn btn-primary" id="ns-save-upload" style="margin-top:0.25rem">Subir y guardar</button>
+            `;
+            const fileInput = content.querySelector('#audio-file');
+            const nameInput = content.querySelector('#audio-name');
+            const preview = content.querySelector('#audio-preview');
+            const saveBtn = content.querySelector('#ns-save-upload');
+
+            let selectedBlob = null;
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+                selectedBlob = file;
+                preview.style.display = 'block';
+                preview.innerHTML = `<audio controls src="${URL.createObjectURL(file)}" style="width:100%;height:40px"></audio>
+                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem">${file.name}</div>`;
+                if (!nameInput.value) nameInput.value = file.name.replace(/\.[^/.]+$/, '');
+            });
+
+            saveBtn.onclick = async () => {
+                const name = nameInput.value.trim();
+                if (!selectedBlob) { showToast("Selecciona un archivo de audio", 'error'); return; }
+                if (!name) { showToast("Ingresa un nombre para el sonido", 'error'); return; }
+                if (customSoundsList.length >= 3) { showToast("Máximo 3 sonidos personalizados. Elimina uno antes.", 'error'); return; }
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Subiendo...';
+                try {
+                    await saveCustomSound(name, selectedBlob);
+                    overlay.remove();
+                    showToast("Sonido guardado! Selecciónalo desde el menú de sonido.", 'success');
+                } catch (e) {
+                    showToast("Error al guardar sonido", 'error');
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Subir y guardar';
+                }
+            };
+        }
+
+        function showRecordUI(overlay) {
+            const content = overlay.querySelector('#ns-content');
+            content.innerHTML = `
+                <div class="recorder-bar">
+                    <button class="rec-btn" id="rec-toggle">🎤</button>
+                    <span class="rec-timer" id="rec-timer">0:00</span>
+                    <span class="rec-status" id="rec-status">Toca para grabar</span>
+                </div>
+                <div id="rec-result" style="display:none;margin-bottom:0.5rem"></div>
+                <input type="text" id="rec-name" placeholder="Nombre del sonido..." autocomplete="off">
+                <button class="btn btn-primary" id="ns-save-rec" style="margin-top:0.25rem;display:none">Guardar sonido</button>
+            `;
+
+            const toggleBtn = content.querySelector('#rec-toggle');
+            const timerEl = content.querySelector('#rec-timer');
+            const statusEl = content.querySelector('#rec-status');
+            const resultEl = content.querySelector('#rec-result');
+            const nameInput = content.querySelector('#rec-name');
+            const saveBtn = content.querySelector('#ns-save-rec');
+
+            let mediaRecorder = null;
+            let stream = null;
+            let chunks = [];
+            let recording = false;
+            let timerInterval = null;
+            let seconds = 0;
+
+            function formatTime(s) {
+                const m = Math.floor(s / 60);
+                const sec = s % 60;
+                return m + ':' + (sec < 10 ? '0' : '') + sec;
+            }
+
+            toggleBtn.onclick = async () => {
+                if (!recording) {
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        mediaRecorder = new MediaRecorder(stream);
+                        chunks = [];
+                        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+                        mediaRecorder.onstop = () => {
+                            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
+                            const url = URL.createObjectURL(blob);
+                            resultEl.style.display = 'block';
+                            resultEl.innerHTML = `<audio controls src="${url}" style="width:100%;height:40px"></audio>`;
+                            saveBtn.style.display = 'block';
+                            statusEl.textContent = 'Grabación lista';
+                            toggleBtn.textContent = '🎤';
+                            toggleBtn.className = 'rec-btn';
+                            if (!nameInput.value) nameInput.value = 'Grabación ' + new Date().toLocaleDateString();
+                            stopStream();
+                        };
+                        mediaRecorder.start();
+                        recording = true;
+                        toggleBtn.textContent = '⏹';
+                        toggleBtn.className = 'rec-btn recording';
+                        seconds = 0;
+                        timerEl.textContent = formatTime(0);
+                        statusEl.textContent = 'Grabando...';
+                        resultEl.style.display = 'none';
+                        saveBtn.style.display = 'none';
+                        timerInterval = setInterval(() => {
+                            seconds++;
+                            timerEl.textContent = formatTime(seconds);
+                            if (seconds >= 10) {
+                                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                                    mediaRecorder.stop();
+                                }
+                                clearInterval(timerInterval);
+                                recording = false;
+                                statusEl.textContent = 'Límite de 10s alcanzado';
+                            }
+                        }, 1000);
+                    } catch (e) {
+                        showToast("Error al acceder al micrófono", 'error');
+                        statusEl.textContent = 'Error: permiso denegado';
+                    }
+                } else {
+                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                        mediaRecorder.stop();
+                    }
+                    clearInterval(timerInterval);
+                    recording = false;
+                }
+            };
+
+            function stopStream() {
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                    stream = null;
+                }
+            }
+
+            saveBtn.onclick = async () => {
+                const name = nameInput.value.trim();
+                if (!chunks.length) { showToast("Graba un audio primero", 'error'); return; }
+                if (!name) { showToast("Ingresa un nombre para el sonido", 'error'); return; }
+                if (customSoundsList.length >= 3) { showToast("Máximo 3 sonidos personalizados. Elimina uno antes.", 'error'); return; }
+                const blob = new Blob(chunks, { type: mediaRecorder ? mediaRecorder.mimeType : 'audio/webm' });
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Guardando...';
+                try {
+                    await saveCustomSound(name, blob, seconds);
+                    stopStream();
+                    overlay.remove();
+                    showToast("Sonido guardado! Selecciónalo desde el menú de sonido.", 'success');
+                } catch (e) {
+                    showToast("Error al guardar grabación", 'error');
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Guardar sonido';
+                }
+            };
+
+            const origCancel = overlay.querySelector('#ns-cancel').onclick;
+            overlay.querySelector('#ns-cancel').onclick = () => { stopStream(); if (timerInterval) clearInterval(timerInterval); origCancel(); };
+            overlay.onclick = (e) => { if (e.target === overlay) { stopStream(); if (timerInterval) clearInterval(timerInterval); overlay.remove(); } };
+        }
+
+        function blobToDataURL(blob) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(r.result);
+                r.onerror = () => reject(new Error("Error leyendo audio"));
+                r.readAsDataURL(blob);
+            });
+        }
+
+        async function saveCustomSound(name, blob, duration) {
+            const user = auth.currentUser;
+            if (!user) throw new Error("Usuario no autenticado");
+            const soundRef = doc(collection(db, "customSounds"));
+            const soundId = soundRef.id;
+            const dataUrl = await blobToDataURL(blob);
+            localStorage.setItem('zumbido-custom-sound-' + soundId, dataUrl);
+            await setDoc(soundRef, {
+                uid: user.uid,
+                name: name,
+                duration: duration || 0,
+                createdAt: serverTimestamp()
+            });
+            showToast("Sonido '" + name + "' guardado!", 'success');
+        }
+
+        async function deleteCustomSound(soundId) {
+            const user = auth.currentUser;
+            if (!user) return;
+            try {
+                await deleteDoc(doc(db, "customSounds", soundId));
+                localStorage.removeItem('zumbido-custom-sound-' + soundId);
+                if (sendSound === 'custom' && sendSoundId === soundId) {
+                    setSendSound('bell', '', '');
+                }
+                showToast("Sonido eliminado", 'info');
+            } catch (e) { showToast("Error al eliminar sonido", 'error'); log(e.message, 'error'); }
+        }
+
         // ============================================================
         // BROWSER NOTIFICATION
         // ============================================================
-        function showBrowserNotification(from, fromUid) {
+        function showBrowserNotification(from, fromUid, extra) {
             if (!("Notification" in window) || Notification.permission !== "granted") return;
             try {
                 navigator.serviceWorker.ready.then(reg => {
