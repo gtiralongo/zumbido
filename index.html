@@ -456,7 +456,6 @@
                     <span id="user-name" class="user-name"></span>
                     <span id="user-status" class="user-status online">● Disponible</span>
                 </div>
-                <button id="notif-btn" class="btn btn-sm btn-outline" style="display:none;flex-shrink:0;margin-left:auto">🔔 Activar</button>
             </div>
 
             <div class="install-banner" id="install-banner">
@@ -561,7 +560,6 @@
         let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
         let buzzesCache = [];
         let customSoundsList = [];
-        let knownBuzzIds = new Set();
         let sendSound = localStorage.getItem('zumbido-send-sound') || 'bell';
         let sendSoundId = localStorage.getItem('zumbido-send-sound-id') || '';
         let sendSoundName = localStorage.getItem('zumbido-send-sound-name') || '';
@@ -582,7 +580,7 @@
             requestsBadge: $('requests-badge'), historyList: $('history-list'),
             groupsList: $('groups-list'), soundToggle: $('sound-toggle'),
             sendSoundBtn: $('send-sound-btn'), themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
-            ptrIndicator: $('ptr-indicator'), notifBtn: $('notif-btn')
+            ptrIndicator: $('ptr-indicator')
         };
 
         // ============================================================
@@ -764,9 +762,6 @@
         // AUTH
         // ============================================================
         $('login-btn').addEventListener('click', () => {
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission().catch(() => {});
-            }
             signInWithPopup(auth, provider).catch(err => log("Login: " + err.message, 'error'));
         });
         $('logout-btn').addEventListener('click', () => {
@@ -774,23 +769,6 @@
             Object.values(unsubs).forEach(u => { if (u) u(); });
             cleanupContactStatus();
             signOut(auth);
-        });
-
-        function updateNotifBtn() {
-            const btn = els.notifBtn;
-            if (!btn) return;
-            if (!("Notification" in window)) { btn.style.display = 'none'; return; }
-            if (Notification.permission === 'granted') { btn.style.display = 'none'; return; }
-            if (Notification.permission === 'denied') { btn.textContent = '🔔 Bloqueado'; btn.style.display = ''; return; }
-            btn.textContent = '🔔 Activar';
-            btn.style.display = '';
-        }
-
-        els.notifBtn.addEventListener('click', () => {
-            Notification.requestPermission().then(r => {
-                if (r === 'granted') { showToast("Notificaciones activadas", 'success'); }
-                updateNotifBtn();
-            });
         });
 
         onAuthStateChanged(auth, async (user) => {
@@ -801,7 +779,7 @@
                 els.userPhoto.src = user.photoURL || '';
                 els.auth.classList.add('hidden');
                 els.main.classList.remove('hidden');
-                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = []; knownBuzzIds = new Set();
+                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = [];
 
                 try {
                     await setDoc(doc(db, "users", user.uid), {
@@ -816,7 +794,6 @@
                 customSoundsList = [];
                 listenContacts(user); listenIncoming(user); listenOutgoing(user); listenBuzzes(user);
                 listenHistory(user); listenGroups(user); listenCustomSounds(user); setupFCM(user);
-                updateNotifBtn();
                 checkReplyParam();
             } else {
                 Object.values(unsubs).forEach(u => { if (u) u(); });
@@ -838,7 +815,6 @@
             if (document.visibilityState === 'visible') {
                 setOnline(true);
                 clearBadge();
-                updateNotifBtn();
             }
         });
 
@@ -930,8 +906,6 @@
             if (document.visibilityState !== 'visible') {
                 showBrowserNotification(data.from, data.fromUid);
                 updateBadge(unreadCount + 1);
-            } else if (isMobile()) {
-                showBrowserNotification(data.from, data.fromUid);
             }
         }
 
@@ -1028,9 +1002,9 @@
                                 navigator.serviceWorker.ready.then(reg => {
                                     reg.showNotification("Nueva solicitud", {
                                         body: d.fromName + " quiere ser tu contacto",
-                                        tag: "request-" + change.doc.id
+                                        icon: "icon-192.svg", tag: "request-" + change.doc.id
                                     });
-                                });
+                                }).catch(() => {});
                             }
                         }
                     }
@@ -1097,12 +1071,13 @@
 
         function listenBuzzes(user) {
             const q = query(collection(db, "buzzes"), where("toUid", "==", user.uid));
+            let start = Date.now();
             unsubs.buzzes = onSnapshot(q, (snap) => {
                 snap.docChanges().forEach(change => {
-                    if (change.type === "added" && !knownBuzzIds.has(change.doc.id)) {
-                        knownBuzzIds.add(change.doc.id);
+                    if (change.type === "added") {
                         const d = change.doc.data();
-                        if (d.deviceId !== sessionDeviceId) {
+                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
+                        if (t > start - 10000 && d.deviceId !== sessionDeviceId) {
                             handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName, soundType: d.soundType, soundData: d.soundData, soundName: d.soundName });
                         }
                     }
@@ -1855,7 +1830,7 @@
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
                         body: from + " te ha enviado un zumbido",
-                        badge: "badge-96.png",
+                        icon: "icon-192.svg", badge: "icon-192.svg",
                         vibrate: [200, 100, 200], requireInteraction: true,
                         tag: "buzz-" + Date.now(),
                         data: { fromUid: fromUid || '', fromName: from },
@@ -1865,7 +1840,9 @@
                         ]
                     });
                 });
-            } catch (e) {}
+            } catch (e) {
+                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" });
+            }
         }
 
         // ============================================================
@@ -1921,6 +1898,10 @@
                     .then(() => log("SW registrado", 'success'))
                     .catch(err => log("SW error: " + err.message, 'error'));
             });
+        }
+
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
         }
 
         // ============================================================
