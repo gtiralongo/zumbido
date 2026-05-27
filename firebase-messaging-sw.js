@@ -41,8 +41,6 @@ messaging.onBackgroundMessage((payload) => {
   const d = payload.data || {};
   self.registration.showNotification(d.title || '¡ZUMBIDO!', {
     body: d.body || (d.fromName ? d.fromName + ' te ha enviado un zumbido' : 'Alguien te ha enviado un zumbido'),
-    icon: 'icon-192.png',
-    badge: 'icon-192.png',
     vibrate: [200, 100, 200],
     requireInteraction: true,
     tag: 'zumbido-' + (d.fromUid || Date.now()),

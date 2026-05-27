@@ -1830,7 +1830,6 @@
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
                         body: from + " te ha enviado un zumbido" + (extra || ''),
-                        icon: "icon-192.png", badge: "icon-192.png",
                         vibrate: [200, 100, 200], requireInteraction: true,
                         tag: "buzz-" + Date.now(),
                         data: { fromUid: fromUid || '', fromName: from },
@@ -1841,7 +1840,7 @@
                     });
                 });
             } catch (e) {
-                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido" + (extra || ''), icon: "icon-192.png" });
+                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido" + (extra || '') });
             }
         }
 
