@@ -44,21 +44,6 @@
         .screen { display: flex; flex-direction: column; flex: 1; }
         .hidden { display: none !important; }
 
-        #splash-section {
-            justify-content: center; align-items: center;
-            background: linear-gradient(135deg, var(--primary) 0%, #8B5CF6 100%);
-            min-height: 100vh; color: #FFF;
-        }
-        .splash-content { text-align: center; }
-        .splash-content .logo { font-size: 4rem; margin-bottom: 0.5rem; }
-        .splash-content h1 { font-size: 2rem; font-weight: 700; margin-bottom: 2rem; }
-        .spinner {
-            width: 36px; height: 36px; margin: 0 auto;
-            border: 4px solid rgba(255,255,255,0.3); border-top-color: #FFF;
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
         #auth-section {
             justify-content: center; align-items: center; padding: 2rem;
             background: linear-gradient(135deg, var(--primary) 0%, #8B5CF6 100%);
@@ -339,65 +324,6 @@
         }
         .ptr-indicator.active { display: block; }
 
-        .sound-dropdown {
-            position: absolute; top: 100%; right: 0; z-index: 20;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: var(--radius); box-shadow: var(--shadow-lg);
-            min-width: 220px; max-height: 60vh; overflow-y: auto;
-            padding: 0.5rem; margin-top: 4px; color: var(--text);
-        }
-        .sound-dropdown .sd-section-title {
-            font-size: 0.7rem; font-weight: 700; color: var(--text);
-            text-transform: uppercase; letter-spacing: 0.04em;
-            padding: 0.3rem 0.4rem; margin-top: 0.25rem; opacity: 0.75;
-        }
-        .sound-dropdown .sd-section-title:first-child { margin-top: 0; }
-        .sound-dropdown .sound-option { color: var(--text); }
-        .sound-dropdown .sound-option .so-name { font-weight: 600; color: var(--text); }
-        .sound-dropdown .sound-option .so-dur { color: var(--text); opacity: 0.5; }
-        .sound-dropdown .so-badge { color: var(--primary); font-weight: 700; }
-        .sound-dropdown .sd-del {
-            background: none; border: none; cursor: pointer; font-size: 0.75rem;
-            color: var(--text-muted); padding: 0.25rem 0.5rem; border-radius: 4px;
-            transition: all var(--transition); flex-shrink: 0;
-        }
-        .sound-dropdown .sd-del:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
-
-        .sound-option {
-            display: flex; align-items: center; gap: 0.65rem;
-            padding: 0.6rem 0.75rem; border: 1px solid var(--border);
-            border-radius: var(--radius-sm); cursor: pointer;
-            transition: all var(--transition); background: var(--surface);
-            margin-bottom: 0.35rem; width: 100%; text-align: left;
-        }
-        .sound-option:hover { border-color: var(--primary); background: var(--primary-light); }
-        .sound-option .so-icon { font-size: 1.2rem; flex-shrink: 0; }
-        .sound-option .so-name { font-size: 0.85rem; font-weight: 500; flex: 1; }
-        .sound-option .so-dur { font-size: 0.72rem; color: var(--text-muted); flex-shrink: 0; }
-        .sound-option .so-badge { font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; background: var(--primary-light); color: var(--primary); flex-shrink: 0; }
-        .sound-picker-section { margin-bottom: 0.5rem; }
-        .sound-picker-section .sps-title { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.3rem; }
-
-        .recorder-bar {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.75rem; background: var(--surface-hover);
-            border-radius: var(--radius-sm); margin-bottom: 0.5rem;
-        }
-        .recorder-bar .rec-btn {
-            width: 44px; height: 44px; border-radius: 50%; border: none;
-            background: var(--danger); color: white; font-size: 1rem;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all var(--transition); flex-shrink: 0;
-        }
-        .recorder-bar .rec-btn.recording { animation: pulse 1s infinite; }
-        .recorder-bar .rec-btn:active { transform: scale(0.95); }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); } 100% { box-shadow: 0 0 0 10px rgba(239,68,68,0); } }
-        .recorder-bar .rec-timer { font-size: 0.9rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 3.5rem; }
-        .recorder-bar .rec-status { font-size: 0.8rem; color: var(--text-secondary); flex: 1; }
-        .recorder-bar .rec-done { color: var(--success); font-size: 0.8rem; }
-
-        .modal-scroll { max-height: 60vh; overflow-y: auto; margin-bottom: 0.5rem; }
-
         @media (min-width: 640px) {
             #app { max-width: 560px; }
             body { align-items: center; padding: 1rem; }
@@ -416,15 +342,7 @@
 </head>
 <body>
     <div id="app">
-        <div id="splash-section" class="screen">
-            <div class="splash-content">
-                <div class="logo">🔔</div>
-                <h1>Zumbido</h1>
-                <div class="spinner"></div>
-            </div>
-        </div>
-
-        <div id="auth-section" class="screen hidden">
+        <div id="auth-section" class="screen">
             <div class="auth-card">
                 <div class="logo">🔔</div>
                 <h1>Zumbido</h1>
@@ -444,7 +362,6 @@
                 </div>
                 <div class="header-right">
                     <button id="sound-toggle" class="icon-btn" title="Sonido">🔊</button>
-                    <button id="send-sound-btn" class="icon-btn" title="Sonido al enviar">🔔</button>
                     <button id="theme-toggle" class="icon-btn" title="Tema">🌙</button>
                     <button id="logout-btn" class="icon-btn" title="Desconectar">✕</button>
                 </div>
@@ -456,7 +373,6 @@
                     <span id="user-name" class="user-name"></span>
                     <span id="user-status" class="user-status online">● Disponible</span>
                 </div>
-                <button id="notif-btn" class="btn btn-sm btn-outline" style="display:none;flex-shrink:0;margin-left:auto">🔔 Activar</button>
             </div>
 
             <div class="install-banner" id="install-banner">
@@ -530,7 +446,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, updateDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit, orderBy, increment, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit, orderBy, increment, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
         const firebaseConfig = {
@@ -554,35 +470,23 @@
         const sessionDeviceId = Math.random().toString(36).substring(7);
         let contactUids = new Set();
         let sentRequestUids = new Set();
-        let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null, customSounds: null };
+        let unsubs = { contacts: null, incoming: null, outgoing: null, buzzes: null, history: null, groups: null };
         let contactStatusUnsubs = new Map();
-        let contactStatusMap = new Map();
         let unreadCount = 0;
         let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
         let buzzesCache = [];
-        let customSoundsList = [];
-        let knownBuzzIds = new Set();
-        let sendSound = localStorage.getItem('zumbido-send-sound') || 'bell';
-        let sendSoundId = localStorage.getItem('zumbido-send-sound-id') || '';
-        let sendSoundName = localStorage.getItem('zumbido-send-sound-name') || '';
-
-        const PREDEFINED_SOUNDS = [
-            { id: 'bell', name: 'Campana', icon: '🔔' },
-            { id: 'chime', name: 'Chime', icon: '🎵' },
-            { id: 'alert', name: 'Alerta', icon: '📢' }
-        ];
 
         const $ = (id) => document.getElementById(id);
         const els = {
-            splash: $('splash-section'), auth: $('auth-section'), main: $('main-section'),
+            auth: $('auth-section'), main: $('main-section'),
             userName: $('user-name'), userPhoto: $('user-photo'), userStatus: $('user-status'),
             contactsList: $('contacts-list'), requestsList: $('requests-list'),
             requestsSection: $('requests-section'), sentList: $('sent-list'), sentSection: $('sent-section'),
             searchInput: $('search-input'), searchResults: $('search-results'),
             requestsBadge: $('requests-badge'), historyList: $('history-list'),
             groupsList: $('groups-list'), soundToggle: $('sound-toggle'),
-            sendSoundBtn: $('send-sound-btn'), themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
-            ptrIndicator: $('ptr-indicator'), notifBtn: $('notif-btn')
+            themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
+            ptrIndicator: $('ptr-indicator')
         };
 
         // ============================================================
@@ -611,136 +515,13 @@
             updateSoundUI();
         });
 
-        function setSendSound(type, id, name) {
-            sendSound = type;
-            sendSoundId = id || '';
-            sendSoundName = name || '';
-            localStorage.setItem('zumbido-send-sound', sendSound);
-            localStorage.setItem('zumbido-send-sound-id', sendSoundId);
-            localStorage.setItem('zumbido-send-sound-name', sendSoundName);
-            updateSendSoundUI();
+        function getContactSound(uid) {
+            return localStorage.getItem('zumbido-sound-' + uid) || 'default';
         }
-
-        function getSendSoundIcon() {
-            if (sendSound === 'custom' && sendSoundName) return '🎤';
-            const ps = PREDEFINED_SOUNDS.find(s => s.id === sendSound);
-            return ps ? ps.icon : '🔔';
+        function setContactSound(uid, val) {
+            localStorage.setItem('zumbido-sound-' + uid, val);
         }
-
-        function updateSendSoundUI() {
-            els.sendSoundBtn.textContent = getSendSoundIcon();
-        }
-        updateSendSoundUI();
-
-        function showSoundDropdown() {
-            const existing = document.querySelector('.sound-dropdown');
-            if (existing) { existing.remove(); return; }
-
-            const div = document.createElement('div');
-            div.className = 'sound-dropdown';
-
-            let html = '<div class="sd-section-title">Sonido al enviar</div>';
-            PREDEFINED_SOUNDS.forEach(s => {
-                const active = sendSound === s.id ? ' style="border-color:var(--primary);background:var(--primary-light);"' : '';
-                html += `<button class="sound-option"${active} data-type="${s.id}">
-                    <span class="so-icon">${s.icon}</span>
-                    <span class="so-name">${s.name}</span>
-                    ${sendSound === s.id ? '<span class="so-badge">✓</span>' : ''}
-                </button>`;
-            });
-
-            if (customSoundsList.length > 0) {
-                html += '<div class="sd-section-title">Tus sonidos</div>';
-                customSoundsList.forEach(s => {
-                    const active = sendSound === 'custom' && sendSoundId === s.id ? ' style="border-color:var(--primary);background:var(--primary-light);"' : '';
-                    html += `<div class="sound-option"${active} style="position:relative">
-                        <button class="sound-option" data-type="custom" data-id="${esc(s.id)}" data-name="${esc(s.name)}" style="flex:1;display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;background:none;border:none;cursor:pointer;text-align:left;color:inherit;font:inherit">
-                            <span class="so-icon">🎤</span>
-                            <span class="so-name">${esc(s.name)}</span>
-                            ${(sendSound === 'custom' && sendSoundId === s.id) ? '<span class="so-badge">✓</span>' : ''}
-                            ${s.duration ? '<span class="so-dur">' + Math.round(s.duration) + 's</span>' : ''}
-                        </button>
-                        <button class="sd-del" data-sid="${esc(s.id)}" title="Eliminar sonido">✕</button>
-                    </div>`;
-                });
-            }
-
-            html += `<button class="sound-option" id="sd-new" style="border-style:dashed;border-color:var(--text-muted);justify-content:center">
-                <span style="font-size:0.8rem">+ Nuevo sonido</span>
-            </button>`;
-
-            div.innerHTML = html;
-
-            div.querySelectorAll('.sound-option[data-type]').forEach(btn => {
-                btn.onclick = () => {
-                    const type = btn.dataset.type;
-                    const id = btn.dataset.id || '';
-                    const name = btn.dataset.name || '';
-                    setSendSound(type, id, name);
-                    div.remove();
-                };
-            });
-
-            const newBtn = div.querySelector('#sd-new');
-            if (newBtn) {
-                newBtn.onclick = () => {
-                    div.remove();
-                    showNewSoundModal();
-                };
-            }
-
-            div.querySelectorAll('.sd-del').forEach(btn => {
-                btn.onclick = (e) => {
-                    e.stopPropagation();
-                    if (confirm("¿Eliminar este sonido personalizado?")) {
-                        deleteCustomSound(btn.dataset.sid);
-                        div.remove();
-                    }
-                };
-            });
-
-            const header = document.querySelector('.app-header');
-            header.appendChild(div);
-
-            function closeOnOutside(e) {
-                if (!div.contains(e.target) && e.target !== els.sendSoundBtn) {
-                    div.remove();
-                    document.removeEventListener('click', closeOnOutside);
-                }
-            }
-            setTimeout(() => document.addEventListener('click', closeOnOutside), 0);
-        }
-
-        els.sendSoundBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showSoundDropdown();
-        });
-
-        function listenCustomSounds(user) {
-            const q = query(collection(db, "customSounds"), where("uid", "==", user.uid));
-            unsubs.customSounds = onSnapshot(q, (snap) => {
-                customSoundsList = [];
-                snap.forEach(ds => {
-                    const data = ds.data();
-                    if (!data.audioData && snap.docChanges().some(c => c.doc.id === ds.id && c.type === 'added')) {
-                        deleteDoc(ds.ref).catch(() => {});
-                        return;
-                    }
-                    customSoundsList.push({ id: ds.id, ...data });
-                });
-                // Clean up orphaned localStorage keys from old system
-                for (let i = localStorage.length - 1; i >= 0; i--) {
-                    const key = localStorage.key(i);
-                    if (key && key.startsWith('zumbido-custom-sound-')) {
-                        localStorage.removeItem(key);
-                    }
-                }
-                if (sendSound === 'custom' && !customSoundsList.some(s => s.id === sendSoundId)) {
-                    setSendSound('bell', '', '');
-                }
-                updateSendSoundUI();
-            }, (e) => log("CustomSounds error: " + e.message, 'error'));
-        }
+        const SOUND_LABELS = { default: '🔔', bell: '🔔', chime: '🎵', alert: '📢', none: '🔇' };
 
         // ============================================================
         // LOG
@@ -764,9 +545,6 @@
         // AUTH
         // ============================================================
         $('login-btn').addEventListener('click', () => {
-            if ("Notification" in window && Notification.permission === "default") {
-                Notification.requestPermission().catch(() => {});
-            }
             signInWithPopup(auth, provider).catch(err => log("Login: " + err.message, 'error'));
         });
         $('logout-btn').addEventListener('click', () => {
@@ -776,32 +554,14 @@
             signOut(auth);
         });
 
-        function updateNotifBtn() {
-            const btn = els.notifBtn;
-            if (!btn) return;
-            if (!("Notification" in window)) { btn.style.display = 'none'; return; }
-            if (Notification.permission === 'granted') { btn.style.display = 'none'; return; }
-            if (Notification.permission === 'denied') { btn.textContent = '🔔 Bloqueado'; btn.style.display = ''; return; }
-            btn.textContent = '🔔 Activar';
-            btn.style.display = '';
-        }
-
-        els.notifBtn.addEventListener('click', () => {
-            Notification.requestPermission().then(r => {
-                if (r === 'granted') { showToast("Notificaciones activadas", 'success'); }
-                updateNotifBtn();
-            });
-        });
-
         onAuthStateChanged(auth, async (user) => {
-            els.splash.classList.add('hidden');
             if (user) {
                 log("Autenticado: " + user.displayName, 'success');
                 els.userName.textContent = user.displayName;
                 els.userPhoto.src = user.photoURL || '';
                 els.auth.classList.add('hidden');
                 els.main.classList.remove('hidden');
-                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = []; knownBuzzIds = new Set();
+                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = [];
 
                 try {
                     await setDoc(doc(db, "users", user.uid), {
@@ -813,16 +573,10 @@
 
                 Object.values(unsubs).forEach(u => { if (u) u(); });
                 cleanupContactStatus();
-                customSoundsList = [];
                 listenContacts(user); listenIncoming(user); listenOutgoing(user); listenBuzzes(user);
-                listenHistory(user); listenGroups(user); listenCustomSounds(user); setupFCM(user);
-                updateNotifBtn();
+                listenHistory(user); listenGroups(user); setupFCM(user);
                 checkReplyParam();
             } else {
-                Object.values(unsubs).forEach(u => { if (u) u(); });
-                cleanupContactStatus();
-                contactUids = new Set();
-                sentRequestUids = new Set();
                 els.auth.classList.remove('hidden');
                 els.main.classList.add('hidden');
             }
@@ -838,7 +592,6 @@
             if (document.visibilityState === 'visible') {
                 setOnline(true);
                 clearBadge();
-                updateNotifBtn();
             }
         });
 
@@ -867,7 +620,7 @@
             const name = p.get('replyName');
             if (uid && name) {
                 window.history.replaceState({}, '', '/');
-                setTimeout(() => sendBuzz(uid, name, 'bell'), 500);
+                setTimeout(() => sendBuzz(uid, name), 500);
                 showToast("🔔 Devolviendo zumbido a " + name, 'buzz');
             }
         }
@@ -915,23 +668,15 @@
         // ============================================================
         function handleBuzzArrival(data) {
             log("¡ZUMBIDO de " + data.from + "!", 'buzz');
-            const soundLabel = data.soundName ? ' 🎵' + esc(data.soundName) : '';
-            showToast("🔔 " + data.from + " te ha enviado un zumbido" + soundLabel, 'buzz');
+            showToast("🔔 " + data.from + " te ha enviado un zumbido", 'buzz');
             triggerShake();
             if (soundEnabled) {
-                if (data.soundType === 'custom' && data.soundData) {
-                    playCustomSound(data.soundData);
-                } else if (data.soundType && data.soundType !== 'none') {
-                    playSound(data.soundType);
-                } else {
-                    playSound('bell');
-                }
+                const custom = getContactSound(data.fromUid);
+                if (custom !== 'none') playSound(custom);
             }
             if (document.visibilityState !== 'visible') {
                 showBrowserNotification(data.from, data.fromUid);
                 updateBadge(unreadCount + 1);
-            } else if (isMobile()) {
-                showBrowserNotification(data.from, data.fromUid);
             }
         }
 
@@ -958,17 +703,32 @@
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.dataset.uid = c.id;
+                    const sound = getContactSound(c.id);
                     el.innerHTML = `
                         <div class="status-dot offline" id="sdot-${c.id}"></div>
                         <img src="${esc(c.photo)}" class="avatar-sm" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23E2E8F0%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 font-size=%2236%22 fill=%22%2394A3B8%22>👤</text></svg>'">
                         <span class="name">${esc(c.name)}</span>
                         <div class="item-actions">
+                            <button class="icon-btn" style="font-size:0.8rem;width:28px;height:28px" title="Sonido: ${sound}" data-action="sound" data-uid="${c.id}">${SOUND_LABELS[sound] || '🔔'}</button>
                             <button class="buzz-btn" title="¡Zumbar!" data-action="buzz">🔔</button>
                             <button class="icon-btn" style="color:var(--text-muted);font-size:0.8rem;width:28px;height:28px" title="Eliminar contacto" data-action="delete" data-uid="${c.id}" data-name="${esc(c.name)}">✕</button>
                         </div>
                     `;
 
-                    el.querySelector('[data-action="buzz"]').onclick = () => sendBuzz(c.id, c.name, sendSound, sendSoundId || undefined, sendSoundName || undefined);
+                    el.querySelector('[data-action="buzz"]').onclick = () => sendBuzz(c.id, c.name);
+
+                    el.querySelector('[data-action="sound"]').onclick = (e) => {
+                        const btn = e.currentTarget;
+                        const uid = btn.dataset.uid;
+                        const cycle = ['default', 'bell', 'chime', 'alert', 'none'];
+                        const cur = getContactSound(uid);
+                        const idx = cycle.indexOf(cur);
+                        const next = cycle[(idx + 1) % cycle.length];
+                        setContactSound(uid, next);
+                        btn.textContent = SOUND_LABELS[next];
+                        btn.title = 'Sonido: ' + next;
+                        showToast("Sonido: " + next, 'info');
+                    };
 
                     el.querySelector('[data-action="delete"]').onclick = (e) => {
                         const btn = e.currentTarget;
@@ -980,32 +740,16 @@
                     els.contactsList.appendChild(el);
                     listenContactStatus(c.id);
                 });
-            }, (e) => log("Contactos error: " + e.message, 'error'));
+            });
         }
 
         function listenContactStatus(uid) {
             const unsub = onSnapshot(doc(db, "users", uid), (snap) => {
                 const d = snap.data();
-                const online = d && d.online ? true : false;
-                contactStatusMap.set(uid, online);
                 const dot = $('sdot-' + uid);
-                if (dot) dot.className = 'status-dot ' + (online ? 'online' : 'offline');
-                sortContactsDOM();
+                if (dot) dot.className = 'status-dot ' + (d && d.online ? 'online' : 'offline');
             });
             contactStatusUnsubs.set(uid, unsub);
-        }
-
-        function sortContactsDOM() {
-            const items = Array.from(els.contactsList.querySelectorAll('.item[data-uid]'));
-            if (items.length < 2) return;
-            items.sort((a, b) => {
-                const aOn = contactStatusMap.get(a.dataset.uid) ?? false;
-                const bOn = contactStatusMap.get(b.dataset.uid) ?? false;
-                if (aOn && !bOn) return -1;
-                if (!aOn && bOn) return 1;
-                return 0;
-            });
-            items.forEach(el => els.contactsList.appendChild(el));
         }
 
         function cleanupContactStatus() {
@@ -1016,38 +760,13 @@
         function listenIncoming(user) {
             const q = query(collection(db, "contactRequests"), where("to", "==", user.uid), where("status", "==", "pending"));
             unsubs.incoming = onSnapshot(q, (snap) => {
-                snap.docChanges().forEach(change => {
-                    if (change.type === "added") {
-                        const d = change.doc.data();
-                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
-                        if (Date.now() - t < 15000) {
-                            log("Nueva solicitud de " + d.fromName, 'info');
-                            showToast("📨 " + d.fromName + " te envió una solicitud", 'success');
-                            if (soundEnabled) playSound('default');
-                            if (document.visibilityState !== 'visible') {
-                                navigator.serviceWorker.ready.then(reg => {
-                                    reg.showNotification("Nueva solicitud", {
-                                        body: d.fromName + " quiere ser tu contacto",
-                                        tag: "request-" + change.doc.id
-                                    });
-                                });
-                            }
-                        }
-                    }
-                });
-
                 els.requestsList.innerHTML = '';
                 let count = 0;
-                const pendingDeletes = [];
                 if (snap.empty) { els.requestsSection.classList.add('hidden'); els.requestsBadge.classList.add('hidden'); return; }
                 els.requestsSection.classList.remove('hidden');
                 snap.forEach(ds => {
-                    const d = ds.data();
-                    if (contactUids.has(d.from)) {
-                        pendingDeletes.push(deleteDoc(doc(db, "contactRequests", ds.id)).catch(() => {}));
-                        return;
-                    }
                     count++;
+                    const d = ds.data();
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.innerHTML = `
@@ -1065,10 +784,9 @@
                     el.querySelector('.btn-reject').onclick = (e) => rejectRequest(e.currentTarget.dataset.rid);
                     els.requestsList.appendChild(el);
                 });
-                if (pendingDeletes.length > 0) { Promise.all(pendingDeletes).then(() => log("Solicitudes huérfanas limpiadas", 'info')); }
                 if (count > 0) { els.requestsBadge.textContent = count; els.requestsBadge.classList.remove('hidden'); }
                 else { els.requestsBadge.classList.add('hidden'); }
-            }, (e) => log("Solicitudes error: " + e.message, 'error'));
+            });
         }
 
         function listenOutgoing(user) {
@@ -1092,18 +810,19 @@
                     el.querySelector('.btn-cancel').onclick = (e) => cancelRequest(e.currentTarget.dataset.rid);
                     els.sentList.appendChild(el);
                 });
-            }, (e) => log("Solicitudes enviadas error: " + e.message, 'error'));
+            });
         }
 
         function listenBuzzes(user) {
             const q = query(collection(db, "buzzes"), where("toUid", "==", user.uid));
+            let start = Date.now();
             unsubs.buzzes = onSnapshot(q, (snap) => {
                 snap.docChanges().forEach(change => {
-                    if (change.type === "added" && !knownBuzzIds.has(change.doc.id)) {
-                        knownBuzzIds.add(change.doc.id);
+                    if (change.type === "added") {
                         const d = change.doc.data();
-                        if (d.deviceId !== sessionDeviceId) {
-                            handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName, soundType: d.soundType, soundData: d.soundData, soundName: d.soundName });
+                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
+                        if (t > start - 10000 && d.deviceId !== sessionDeviceId) {
+                            handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName });
                         }
                     }
                 });
@@ -1174,33 +893,21 @@
                     const el = document.createElement('div');
                     el.className = 'item';
                     const mc = (d.memberIds || []).length;
-                    const isCreator = d.createdBy === user.uid;
                     el.innerHTML = `
                         <span style="font-size:1.2rem">👥</span>
                         <span class="name">${esc(d.name)}</span>
                         <span class="badge-label badge-group">${mc}</span>
                         <div class="item-actions">
-                            <button class="btn-sm btn-outline" data-action="members" data-gid="${ds.id}" title="Miembros">👤</button>
+                            <button class="btn-sm btn-outline" data-action="members" data-gid="${ds.id}">👤</button>
                             <button class="buzz-btn" title="Zumbar al grupo" data-action="buzz" data-gid="${ds.id}" data-name="${esc(d.name)}">🔔</button>
-                            ${isCreator ? `<button class="btn-sm btn-outline" data-action="edit" data-gid="${ds.id}" title="Editar grupo">✏️</button>
-                            <button class="btn-sm btn-outline" data-action="delete" data-gid="${ds.id}" data-name="${esc(d.name)}" title="Eliminar grupo" style="color:var(--danger)">🗑️</button>` : ''}
                         </div>
                     `;
                     el.querySelector('[data-action="buzz"]').onclick = (e) => {
                         const b = e.currentTarget;
-                        buzzGroup(b.dataset.gid, b.dataset.name, sendSound, sendSoundId || undefined, sendSoundName || undefined);
+                        buzzGroup(b.dataset.gid, b.dataset.name);
                     };
                     el.querySelector('[data-action="members"]').onclick = (e) => {
                         showGroupMembers(e.currentTarget.dataset.gid);
-                    };
-                    const editBtn = el.querySelector('[data-action="edit"]');
-                    if (editBtn) editBtn.onclick = (e) => { showEditGroup(e.currentTarget.dataset.gid); };
-                    const delBtn = el.querySelector('[data-action="delete"]');
-                    if (delBtn) delBtn.onclick = (e) => {
-                        const b = e.currentTarget;
-                        if (confirm("¿Eliminar el grupo '" + b.dataset.name + "'? Esta acción no se puede deshacer.")) {
-                            deleteGroup(b.dataset.gid);
-                        }
                     };
                     els.groupsList.appendChild(el);
                 });
@@ -1233,92 +940,7 @@
             } catch (e) { showToast("Error al crear grupo", 'error'); log(e.message, 'error'); }
         }
 
-        async function deleteGroup(gid) {
-            try {
-                await deleteDoc(doc(db, "groups", gid));
-                showToast("Grupo eliminado", 'info');
-            } catch (e) { showToast("Error al eliminar grupo", 'error'); log(e.message, 'error'); }
-        }
-
-        function showEditGroup(gid) {
-            const group = myGroups.get(gid);
-            if (!group) return;
-            const user = auth.currentUser;
-            if (!user) return;
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            overlay.innerHTML = `
-                <div class="modal">
-                    <h3>Editar Grupo</h3>
-                    <input id="edit-group-name" type="text" value="${esc(group.name)}" autocomplete="off">
-                    <div style="font-size:0.8rem;color:var(--text-secondary);margin:0.5rem 0">Miembros:</div>
-                    <div class="member-list" id="edit-group-member-list">
-                        <p class="empty-msg" style="padding:0.5rem 0">Cargando...</p>
-                    </div>
-                    <div class="modal-actions">
-                        <button class="btn btn-outline" id="cancel-edit-group">Cancelar</button>
-                        <button class="btn btn-primary" id="save-edit-group">Guardar</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-
-            const memberList = overlay.querySelector('#edit-group-member-list');
-            const checkboxes = [];
-            const currentMemberIds = (group.memberIds || []);
-
-            if (contactUids.size > 0) {
-                memberList.innerHTML = '';
-                contactUids.forEach(uid => {
-                    const contacts = document.querySelectorAll('#contacts-list .item');
-                    let name = '';
-                    contacts.forEach(c => {
-                        if (c.dataset.uid === uid) name = c.querySelector('.name')?.textContent || uid;
-                    });
-                    if (!name) return;
-                    const checked = currentMemberIds.includes(uid) ? ' checked' : '';
-                    const row = document.createElement('div');
-                    row.className = 'member-row';
-                    row.innerHTML = `
-                        <label>
-                            <input type="checkbox" value="${uid}"${checked}>
-                            <span>${esc(name)}</span>
-                        </label>
-                    `;
-                    memberList.appendChild(row);
-                    checkboxes.push(row.querySelector('input'));
-                });
-            }
-
-            overlay.querySelector('#cancel-edit-group').onclick = () => overlay.remove();
-            overlay.querySelector('#save-edit-group').onclick = async () => {
-                const name = overlay.querySelector('#edit-group-name').value.trim();
-                if (!name) { showToast("Ingresa un nombre para el grupo", 'error'); return; }
-                const selected = checkboxes.filter(c => c.checked).map(c => c.value);
-                const uids = [user.uid, ...selected.filter(uid => uid !== user.uid)];
-                const members = [{ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL || '' }];
-                try {
-                    for (const muid of uids) {
-                        if (muid === user.uid) continue;
-                        const snap = await getDocs(query(collection(db, "users"), where("__name__", "==", muid), limit(1)));
-                        snap.forEach(ds => {
-                            const d = ds.data();
-                            members.push({ uid: ds.id, displayName: d.displayName, photoURL: d.photoURL || '' });
-                        });
-                    }
-                    await updateDoc(doc(db, "groups", gid), {
-                        name,
-                        memberIds: uids,
-                        members
-                    });
-                    showToast("Grupo actualizado", 'success');
-                } catch (e) { showToast("Error al actualizar grupo", 'error'); log(e.message, 'error'); }
-                overlay.remove();
-            };
-            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-        }
-
-        function buzzGroup(gid, gname, soundType, soundId, soundName) {
+        function buzzGroup(gid, gname) {
             const user = auth.currentUser;
             if (!user) return;
             const group = myGroups.get(gid);
@@ -1327,27 +949,15 @@
             if (targets.length === 0) { showToast("No hay otros miembros en el grupo", 'info'); return; }
             log("Zumbando al grupo: " + gname, 'info');
 
-            let dataUrl = '';
-            if (soundType === 'custom' && soundId) {
-                const cs = customSoundsList.find(s => s.id === soundId);
-                dataUrl = (cs && cs.audioData) || '';
-                if (!dataUrl) soundType = 'bell';
-            }
-
             targets.forEach(t => {
-                const docData = {
+                addDoc(collection(db, "buzzes"), {
                     toUid: t.uid, toName: t.displayName,
                     from: user.displayName, fromUid: user.uid,
                     timestamp: serverTimestamp(), deviceId: sessionDeviceId,
-                    groupId: gid, groupName: gname,
-                    soundType: soundType || 'bell'
-                };
-                if (dataUrl) docData.soundData = dataUrl;
-                if (soundName) docData.soundName = soundName;
-                addDoc(collection(db, "buzzes"), docData).catch(e => log("Group buzz error: " + e.message, 'error'));
+                    groupId: gid, groupName: gname
+                }).catch(e => log("Group buzz error: " + e.message, 'error'));
             });
-            const label = soundName ? ' 🎵' + soundName : '';
-            showToast("🔔 Zumbido enviado a " + targets.length + " miembros de " + gname + label, 'success');
+            showToast("🔔 Zumbido enviado a " + targets.length + " miembros de " + gname, 'success');
             triggerShake();
         }
 
@@ -1460,29 +1070,21 @@
         async function acceptRequest(rid, uid, name, photo) {
             const user = auth.currentUser;
             if (!user) return;
-            if (contactUids.has(uid)) {
-                await rejectRequest(rid);
-                return;
-            }
             try {
-                const batch = writeBatch(db);
-                batch.set(doc(db, "contacts", user.uid, "list", uid), { displayName: name, photoURL: photo, addedAt: serverTimestamp() });
-                batch.set(doc(db, "contacts", uid, "list", user.uid), { displayName: user.displayName, photoURL: user.photoURL || '', addedAt: serverTimestamp() });
-                batch.delete(doc(db, "contactRequests", rid));
-                await batch.commit();
+                await setDoc(doc(db, "contacts", user.uid, "list", uid), { displayName: name, photoURL: photo, addedAt: serverTimestamp() });
+                await setDoc(doc(db, "contacts", uid, "list", user.uid), { displayName: user.displayName, photoURL: user.photoURL || '', addedAt: serverTimestamp() });
+                await deleteDoc(doc(db, "contactRequests", rid));
                 showToast("¡" + name + " ahora es tu contacto!", 'success');
             } catch (e) { showToast("Error al aceptar solicitud", 'error'); log(e.message, 'error'); }
         }
-        async function rejectRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); showToast("Solicitud rechazada", 'info'); } catch (e) { log(e.message, 'error'); } }
-        async function cancelRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); showToast("Solicitud cancelada", 'info'); } catch (e) { log(e.message, 'error'); } }
+        async function rejectRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); } catch (e) { log(e.message, 'error'); } }
+        async function cancelRequest(rid) { try { await deleteDoc(doc(db, "contactRequests", rid)); } catch (e) { log(e.message, 'error'); } }
         async function deleteContact(uid, name) {
             const user = auth.currentUser;
             if (!user) return;
             try {
-                const batch = writeBatch(db);
-                batch.delete(doc(db, "contacts", user.uid, "list", uid));
-                batch.delete(doc(db, "contacts", uid, "list", user.uid));
-                await batch.commit();
+                await deleteDoc(doc(db, "contacts", user.uid, "list", uid));
+                await deleteDoc(doc(db, "contacts", uid, "list", user.uid));
                 showToast(name + " eliminado de contactos", 'info');
             } catch (e) { showToast("Error al eliminar contacto", 'error'); log(e.message, 'error'); }
         }
@@ -1548,24 +1150,15 @@
         // ============================================================
         // BUZZ
         // ============================================================
-        async function sendBuzz(toUid, toName, soundType, soundId, soundName) {
+        async function sendBuzz(toUid, toName) {
             const user = auth.currentUser;
             if (!user) return;
             try {
-                const docData = {
+                await addDoc(collection(db, "buzzes"), {
                     toUid, toName, from: user.displayName, fromUid: user.uid,
-                    timestamp: serverTimestamp(), deviceId: sessionDeviceId,
-                    soundType: soundType || 'bell'
-                };
-                if (soundName) docData.soundName = soundName;
-                if (soundType === 'custom' && soundId) {
-                    const cs = customSoundsList.find(s => s.id === soundId);
-                    if (cs && cs.audioData) docData.soundData = cs.audioData;
-                    else docData.soundType = 'bell';
-                }
-                await addDoc(collection(db, "buzzes"), docData);
-                const label = soundName ? ' 🎵' + soundName : '';
-                showToast("🔔 Zumbido enviado a " + toName + label, 'success');
+                    timestamp: serverTimestamp(), deviceId: sessionDeviceId
+                });
+                showToast("🔔 Zumbido enviado a " + toName, 'success');
                 triggerShake();
             } catch (e) { showToast("Error al enviar zumbido", 'error'); log(e.message, 'error'); }
         }
@@ -1615,237 +1208,6 @@
             } catch (e) {}
         }
 
-        function playCustomSound(url) {
-            try {
-                const audio = new Audio(url);
-                audio.volume = 0.6;
-                audio.play().catch(() => playSound('bell'));
-            } catch (e) { playSound('bell'); }
-        }
-
-        function showNewSoundModal() {
-            const overlay = document.createElement('div');
-            overlay.className = 'overlay';
-            overlay.innerHTML = `
-                <div class="modal">
-                    <h3>+ Nuevo sonido</h3>
-                    <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
-                        <button class="btn btn-outline" id="ns-upload" style="flex:1">📁 Subir audio</button>
-                        <button class="btn btn-outline" id="ns-record" style="flex:1">🎙️ Grabar</button>
-                    </div>
-                    <div id="ns-content">
-                        <p style="color:var(--text-muted);font-size:0.85rem;text-align:center;padding:1rem 0">Selecciona subir o grabar un audio</p>
-                    </div>
-                    <div class="modal-actions">
-                        <button class="btn btn-cancel" id="ns-cancel">Cancelar</button>
-                    </div>
-                </div>
-            `;
-            overlay.querySelector('#ns-cancel').onclick = () => overlay.remove();
-            overlay.querySelector('#ns-upload').onclick = () => showUploadUI(overlay);
-            overlay.querySelector('#ns-record').onclick = () => showRecordUI(overlay);
-            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
-            document.body.appendChild(overlay);
-        }
-
-        function showUploadUI(overlay) {
-            const content = overlay.querySelector('#ns-content');
-            content.innerHTML = `
-                <input type="file" id="audio-file" accept="audio/*" style="margin-bottom:0.5rem">
-                <input type="text" id="audio-name" placeholder="Nombre del sonido..." autocomplete="off">
-                <div id="audio-preview" style="margin-bottom:0.5rem;display:none"></div>
-                <button class="btn btn-primary" id="ns-save-upload" style="margin-top:0.25rem">Subir y guardar</button>
-            `;
-            const fileInput = content.querySelector('#audio-file');
-            const nameInput = content.querySelector('#audio-name');
-            const preview = content.querySelector('#audio-preview');
-            const saveBtn = content.querySelector('#ns-save-upload');
-
-            let selectedBlob = null;
-
-            fileInput.addEventListener('change', () => {
-                const file = fileInput.files[0];
-                if (!file) return;
-                selectedBlob = file;
-                preview.style.display = 'block';
-                preview.innerHTML = `<audio controls src="${URL.createObjectURL(file)}" style="width:100%;height:40px"></audio>
-                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem">${file.name}</div>`;
-                if (!nameInput.value) nameInput.value = file.name.replace(/\.[^/.]+$/, '');
-            });
-
-            saveBtn.onclick = async () => {
-                const name = nameInput.value.trim();
-                if (!selectedBlob) { showToast("Selecciona un archivo de audio", 'error'); return; }
-                if (!name) { showToast("Ingresa un nombre para el sonido", 'error'); return; }
-                if (customSoundsList.length >= 3) { showToast("Máximo 3 sonidos personalizados. Elimina uno antes.", 'error'); return; }
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Subiendo...';
-                try {
-                    await saveCustomSound(name, selectedBlob);
-                    overlay.remove();
-                    showToast("Sonido guardado! Selecciónalo desde el menú de sonido.", 'success');
-                } catch (e) {
-                    showToast("Error al guardar sonido", 'error');
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Subir y guardar';
-                }
-            };
-        }
-
-        function showRecordUI(overlay) {
-            const content = overlay.querySelector('#ns-content');
-            content.innerHTML = `
-                <div class="recorder-bar">
-                    <button class="rec-btn" id="rec-toggle">🎤</button>
-                    <span class="rec-timer" id="rec-timer">0:00</span>
-                    <span class="rec-status" id="rec-status">Toca para grabar</span>
-                </div>
-                <div id="rec-result" style="display:none;margin-bottom:0.5rem"></div>
-                <input type="text" id="rec-name" placeholder="Nombre del sonido..." autocomplete="off">
-                <button class="btn btn-primary" id="ns-save-rec" style="margin-top:0.25rem;display:none">Guardar sonido</button>
-            `;
-
-            const toggleBtn = content.querySelector('#rec-toggle');
-            const timerEl = content.querySelector('#rec-timer');
-            const statusEl = content.querySelector('#rec-status');
-            const resultEl = content.querySelector('#rec-result');
-            const nameInput = content.querySelector('#rec-name');
-            const saveBtn = content.querySelector('#ns-save-rec');
-
-            let mediaRecorder = null;
-            let stream = null;
-            let chunks = [];
-            let recording = false;
-            let timerInterval = null;
-            let seconds = 0;
-
-            function formatTime(s) {
-                const m = Math.floor(s / 60);
-                const sec = s % 60;
-                return m + ':' + (sec < 10 ? '0' : '') + sec;
-            }
-
-            toggleBtn.onclick = async () => {
-                if (!recording) {
-                    try {
-                        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        mediaRecorder = new MediaRecorder(stream);
-                        chunks = [];
-                        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
-                        mediaRecorder.onstop = () => {
-                            const blob = new Blob(chunks, { type: mediaRecorder.mimeType });
-                            const url = URL.createObjectURL(blob);
-                            resultEl.style.display = 'block';
-                            resultEl.innerHTML = `<audio controls src="${url}" style="width:100%;height:40px"></audio>`;
-                            saveBtn.style.display = 'block';
-                            statusEl.textContent = 'Grabación lista';
-                            toggleBtn.textContent = '🎤';
-                            toggleBtn.className = 'rec-btn';
-                            if (!nameInput.value) nameInput.value = 'Grabación ' + new Date().toLocaleDateString();
-                            stopStream();
-                        };
-                        mediaRecorder.start();
-                        recording = true;
-                        toggleBtn.textContent = '⏹';
-                        toggleBtn.className = 'rec-btn recording';
-                        seconds = 0;
-                        timerEl.textContent = formatTime(0);
-                        statusEl.textContent = 'Grabando...';
-                        resultEl.style.display = 'none';
-                        saveBtn.style.display = 'none';
-                        timerInterval = setInterval(() => {
-                            seconds++;
-                            timerEl.textContent = formatTime(seconds);
-                            if (seconds >= 10) {
-                                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                                    mediaRecorder.stop();
-                                }
-                                clearInterval(timerInterval);
-                                recording = false;
-                                statusEl.textContent = 'Límite de 10s alcanzado';
-                            }
-                        }, 1000);
-                    } catch (e) {
-                        showToast("Error al acceder al micrófono", 'error');
-                        statusEl.textContent = 'Error: permiso denegado';
-                    }
-                } else {
-                    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                        mediaRecorder.stop();
-                    }
-                    clearInterval(timerInterval);
-                    recording = false;
-                }
-            };
-
-            function stopStream() {
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                    stream = null;
-                }
-            }
-
-            saveBtn.onclick = async () => {
-                const name = nameInput.value.trim();
-                if (!chunks.length) { showToast("Graba un audio primero", 'error'); return; }
-                if (!name) { showToast("Ingresa un nombre para el sonido", 'error'); return; }
-                if (customSoundsList.length >= 3) { showToast("Máximo 3 sonidos personalizados. Elimina uno antes.", 'error'); return; }
-                const blob = new Blob(chunks, { type: mediaRecorder ? mediaRecorder.mimeType : 'audio/webm' });
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Guardando...';
-                try {
-                    await saveCustomSound(name, blob, seconds);
-                    stopStream();
-                    overlay.remove();
-                    showToast("Sonido guardado! Selecciónalo desde el menú de sonido.", 'success');
-                } catch (e) {
-                    showToast("Error al guardar grabación", 'error');
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Guardar sonido';
-                }
-            };
-
-            const origCancel = overlay.querySelector('#ns-cancel').onclick;
-            overlay.querySelector('#ns-cancel').onclick = () => { stopStream(); if (timerInterval) clearInterval(timerInterval); origCancel(); };
-            overlay.onclick = (e) => { if (e.target === overlay) { stopStream(); if (timerInterval) clearInterval(timerInterval); overlay.remove(); } };
-        }
-
-        function blobToDataURL(blob) {
-            return new Promise((resolve, reject) => {
-                const r = new FileReader();
-                r.onload = () => resolve(r.result);
-                r.onerror = () => reject(new Error("Error leyendo audio"));
-                r.readAsDataURL(blob);
-            });
-        }
-
-        async function saveCustomSound(name, blob, duration) {
-            const user = auth.currentUser;
-            if (!user) throw new Error("Usuario no autenticado");
-            const soundRef = doc(collection(db, "customSounds"));
-            const dataUrl = await blobToDataURL(blob);
-            await setDoc(soundRef, {
-                uid: user.uid,
-                name: name,
-                duration: duration || 0,
-                audioData: dataUrl,
-                createdAt: serverTimestamp()
-            });
-            showToast("Sonido '" + name + "' guardado!", 'success');
-        }
-
-        async function deleteCustomSound(soundId) {
-            const user = auth.currentUser;
-            if (!user) return;
-            try {
-                await deleteDoc(doc(db, "customSounds", soundId));
-                if (sendSound === 'custom' && sendSoundId === soundId) {
-                    setSendSound('bell', '', '');
-                }
-                showToast("Sonido eliminado", 'info');
-            } catch (e) { showToast("Error al eliminar sonido", 'error'); log(e.message, 'error'); }
-        }
-
         // ============================================================
         // BROWSER NOTIFICATION
         // ============================================================
@@ -1855,7 +1217,7 @@
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
                         body: from + " te ha enviado un zumbido",
-                        badge: "badge-96.png",
+                        icon: "icon-192.svg", badge: "icon-192.svg",
                         vibrate: [200, 100, 200], requireInteraction: true,
                         tag: "buzz-" + Date.now(),
                         data: { fromUid: fromUid || '', fromName: from },
@@ -1865,7 +1227,9 @@
                         ]
                     });
                 });
-            } catch (e) {}
+            } catch (e) {
+                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" });
+            }
         }
 
         // ============================================================
@@ -1917,10 +1281,14 @@
         // ============================================================
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./firebase-messaging-sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(() => log("SW registrado", 'success'))
                     .catch(err => log("SW error: " + err.message, 'error'));
             });
+        }
+
+        if ("Notification" in window && Notification.permission === "default") {
+            Notification.requestPermission();
         }
 
         // ============================================================
@@ -1931,15 +1299,10 @@
         const installBtn = $('install-btn');
         const installClose = $('install-close');
 
-        function isMobile() {
-            return window.matchMedia('(max-width: 768px) and (pointer: coarse)').matches
-                || /android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
-        }
-
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (isMobile() && !localStorage.getItem('zumbido-install-dismissed')) {
+            if (!localStorage.getItem('zumbido-install-dismissed')) {
                 installBanner.classList.add('show');
             }
         });

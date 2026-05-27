@@ -14,13 +14,6 @@ service cloud.firestore {
       match /list/{contactId} {
         allow read: if request.auth.uid == uid;
         allow write: if request.auth.uid == uid;
-        allow create: if request.auth.uid == contactId
-          && request.resource.data.keys().hasAll(['_requestId'])
-          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.status == "pending"
-          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.from == uid
-          && get(/databases/$(database)/documents/contactRequests/$(request.resource.data._requestId)).data.to == contactId;
-        allow delete: if request.auth.uid == contactId
-          && !exists(/databases/$(database)/documents/contacts/$(contactId)/list/$(uid));
       }
     }
 
@@ -43,11 +36,6 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow update: if request.auth != null && resource.data.memberIds.hasAny([request.auth.uid]);
       allow delete: if request.auth != null && resource.data.createdBy == request.auth.uid;
-    }
-
-    match /customSounds/{id} {
-      allow read, write: if request.auth != null && request.auth.uid == resource.data.uid;
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
     }
   }
 }
