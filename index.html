@@ -903,7 +903,7 @@
                     playSound('bell');
                 }
             }
-            showBrowserNotification(data.from, data.fromUid, soundLabel);
+            showBrowserNotification(data.from, data.fromUid);
             if (document.visibilityState !== 'visible') {
                 updateBadge(unreadCount + 1);
             }
@@ -1824,12 +1824,13 @@
         // ============================================================
         // BROWSER NOTIFICATION
         // ============================================================
-        function showBrowserNotification(from, fromUid, extra) {
+        function showBrowserNotification(from, fromUid) {
             if (!("Notification" in window) || Notification.permission !== "granted") return;
             try {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
-                        body: from + " te ha enviado un zumbido" + (extra || ''),
+                        body: from + " te ha enviado un zumbido",
+                        icon: "icon-192.svg", badge: "icon-192.svg",
                         vibrate: [200, 100, 200], requireInteraction: true,
                         tag: "buzz-" + Date.now(),
                         data: { fromUid: fromUid || '', fromName: from },
@@ -1840,7 +1841,7 @@
                     });
                 });
             } catch (e) {
-                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido" + (extra || '') });
+                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" });
             }
         }
 
