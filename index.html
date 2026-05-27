@@ -827,11 +827,16 @@
 
                 els.requestsList.innerHTML = '';
                 let count = 0;
+                const pendingDeletes = [];
                 if (snap.empty) { els.requestsSection.classList.add('hidden'); els.requestsBadge.classList.add('hidden'); return; }
                 els.requestsSection.classList.remove('hidden');
                 snap.forEach(ds => {
-                    count++;
                     const d = ds.data();
+                    if (contactUids.has(d.from)) {
+                        pendingDeletes.push(deleteDoc(doc(db, "contactRequests", ds.id)).catch(() => {}));
+                        return;
+                    }
+                    count++;
                     const el = document.createElement('div');
                     el.className = 'item';
                     el.innerHTML = `
@@ -849,6 +854,7 @@
                     el.querySelector('.btn-reject').onclick = (e) => rejectRequest(e.currentTarget.dataset.rid);
                     els.requestsList.appendChild(el);
                 });
+                if (pendingDeletes.length > 0) { Promise.all(pendingDeletes).then(() => log("Solicitudes huérfanas limpiadas", 'info')); }
                 if (count > 0) { els.requestsBadge.textContent = count; els.requestsBadge.classList.remove('hidden'); }
                 else { els.requestsBadge.classList.add('hidden'); }
             }, (e) => log("Solicitudes error: " + e.message, 'error'));
@@ -1135,10 +1141,14 @@
         async function acceptRequest(rid, uid, name, photo) {
             const user = auth.currentUser;
             if (!user) return;
+            if (contactUids.has(uid)) {
+                await rejectRequest(rid);
+                return;
+            }
             try {
                 const batch = writeBatch(db);
                 batch.set(doc(db, "contacts", user.uid, "list", uid), { displayName: name, photoURL: photo, addedAt: serverTimestamp() });
-                batch.set(doc(db, "contacts", uid, "list", user.uid), { displayName: user.displayName, photoURL: user.photoURL || '', addedAt: serverTimestamp(), _requestId: rid });
+                batch.set(doc(db, "contacts", uid, "list", user.uid), { displayName: user.displayName, photoURL: user.photoURL || '', addedAt: serverTimestamp() });
                 batch.delete(doc(db, "contactRequests", rid));
                 await batch.commit();
                 showToast("¡" + name + " ahora es tu contacto!", 'success');
