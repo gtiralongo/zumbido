@@ -456,6 +456,7 @@
                     <span id="user-name" class="user-name"></span>
                     <span id="user-status" class="user-status online">● Disponible</span>
                 </div>
+                <button id="notif-btn" class="btn btn-sm btn-outline" style="display:none;flex-shrink:0;margin-left:auto">🔔 Activar</button>
             </div>
 
             <div class="install-banner" id="install-banner">
@@ -581,7 +582,7 @@
             requestsBadge: $('requests-badge'), historyList: $('history-list'),
             groupsList: $('groups-list'), soundToggle: $('sound-toggle'),
             sendSoundBtn: $('send-sound-btn'), themeToggle: $('theme-toggle'), toastContainer: $('toast-container'),
-            ptrIndicator: $('ptr-indicator')
+            ptrIndicator: $('ptr-indicator'), notifBtn: $('notif-btn')
         };
 
         // ============================================================
@@ -775,6 +776,23 @@
             signOut(auth);
         });
 
+        function updateNotifBtn() {
+            const btn = els.notifBtn;
+            if (!btn) return;
+            if (!("Notification" in window)) { btn.style.display = 'none'; return; }
+            if (Notification.permission === 'granted') { btn.style.display = 'none'; return; }
+            if (Notification.permission === 'denied') { btn.textContent = '🔔 Bloqueado'; btn.style.display = ''; return; }
+            btn.textContent = '🔔 Activar';
+            btn.style.display = '';
+        }
+
+        els.notifBtn.addEventListener('click', () => {
+            Notification.requestPermission().then(r => {
+                if (r === 'granted') { showToast("Notificaciones activadas", 'success'); }
+                updateNotifBtn();
+            });
+        });
+
         onAuthStateChanged(auth, async (user) => {
             els.splash.classList.add('hidden');
             if (user) {
@@ -798,6 +816,7 @@
                 customSoundsList = [];
                 listenContacts(user); listenIncoming(user); listenOutgoing(user); listenBuzzes(user);
                 listenHistory(user); listenGroups(user); listenCustomSounds(user); setupFCM(user);
+                updateNotifBtn();
                 checkReplyParam();
             } else {
                 Object.values(unsubs).forEach(u => { if (u) u(); });
@@ -819,6 +838,7 @@
             if (document.visibilityState === 'visible') {
                 setOnline(true);
                 clearBadge();
+                updateNotifBtn();
             }
         });
 
@@ -1008,9 +1028,9 @@
                                 navigator.serviceWorker.ready.then(reg => {
                                     reg.showNotification("Nueva solicitud", {
                                         body: d.fromName + " quiere ser tu contacto",
-                                        icon: "icon-192.svg", tag: "request-" + change.doc.id
-                                    }).catch(e => log("Req notif error: " + e.message, 'error'));
-                                }).catch(e => log("SW ready error: " + e.message, 'error'));
+                                        tag: "request-" + change.doc.id
+                                    });
+                                });
                             }
                         }
                     }
@@ -1830,15 +1850,12 @@
         // BROWSER NOTIFICATION
         // ============================================================
         function showBrowserNotification(from, fromUid) {
-            if (!("Notification" in window) || Notification.permission !== "granted") {
-                log("Notificación omitida: permiso " + Notification.permission, 'warn');
-                return;
-            }
+            if (!("Notification" in window) || Notification.permission !== "granted") return;
             try {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
                         body: from + " te ha enviado un zumbido",
-                        icon: "icon-192.svg", badge: "icon-192.svg",
+                        badge: "badge-96.png",
                         vibrate: [200, 100, 200], requireInteraction: true,
                         tag: "buzz-" + Date.now(),
                         data: { fromUid: fromUid || '', fromName: from },
@@ -1846,12 +1863,9 @@
                             { action: 'reply', title: '🔔 Responder' },
                             { action: 'open', title: 'Abrir' }
                         ]
-                    }).catch(e => log("showNotification error: " + e.message, 'error'));
-                }).catch(e => log("SW ready error: " + e.message, 'error'));
-            } catch (e) {
-                try { new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" }); }
-                catch (e2) { log("new Notification error: " + e2.message, 'error'); }
-            }
+                    });
+                });
+            } catch (e) {}
         }
 
         // ============================================================

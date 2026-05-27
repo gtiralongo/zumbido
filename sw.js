@@ -6,7 +6,9 @@ const ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './icon-192.svg',
-  './icon-512.svg'
+  './icon-512.svg',
+  './badge-96.png',
+  './badge-192.png'
 ];
 
 self.addEventListener('install', (e) => {

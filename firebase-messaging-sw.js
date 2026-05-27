@@ -11,7 +11,7 @@ firebase.initializeApp({
 });
 
 const CACHE = 'zumbido-v2';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-192.svg', './icon-512.svg'];
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-192.svg', './icon-512.svg', './badge-96.png', './badge-192.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -41,8 +41,7 @@ messaging.onBackgroundMessage((payload) => {
   const d = payload.data || {};
   self.registration.showNotification(d.title || '¡ZUMBIDO!', {
     body: d.body || (d.fromName ? d.fromName + ' te ha enviado un zumbido' : 'Alguien te ha enviado un zumbido'),
-    icon: 'icon-192.svg',
-    badge: 'icon-192.svg',
+    badge: 'badge-96.png',
     vibrate: [200, 100, 200],
     requireInteraction: true,
     tag: 'zumbido-' + (d.fromUid || Date.now()),
