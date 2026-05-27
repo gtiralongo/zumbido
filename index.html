@@ -903,8 +903,8 @@
                     playSound('bell');
                 }
             }
-            showBrowserNotification(data.from, data.fromUid);
             if (document.visibilityState !== 'visible') {
+                showBrowserNotification(data.from, data.fromUid);
                 updateBadge(unreadCount + 1);
             }
         }
