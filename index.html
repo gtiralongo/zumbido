@@ -560,6 +560,7 @@
         let soundEnabled = localStorage.getItem('zumbido-sound') !== 'off';
         let buzzesCache = [];
         let customSoundsList = [];
+        let knownBuzzIds = new Set();
         let sendSound = localStorage.getItem('zumbido-send-sound') || 'bell';
         let sendSoundId = localStorage.getItem('zumbido-send-sound-id') || '';
         let sendSoundName = localStorage.getItem('zumbido-send-sound-name') || '';
@@ -762,6 +763,9 @@
         // AUTH
         // ============================================================
         $('login-btn').addEventListener('click', () => {
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission().catch(() => {});
+            }
             signInWithPopup(auth, provider).catch(err => log("Login: " + err.message, 'error'));
         });
         $('logout-btn').addEventListener('click', () => {
@@ -779,7 +783,7 @@
                 els.userPhoto.src = user.photoURL || '';
                 els.auth.classList.add('hidden');
                 els.main.classList.remove('hidden');
-                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = [];
+                contactUids = new Set(); sentRequestUids = new Set(); buzzesCache = []; knownBuzzIds = new Set();
 
                 try {
                     await setDoc(doc(db, "users", user.uid), {
@@ -906,6 +910,8 @@
             if (document.visibilityState !== 'visible') {
                 showBrowserNotification(data.from, data.fromUid);
                 updateBadge(unreadCount + 1);
+            } else if (isMobile()) {
+                showBrowserNotification(data.from, data.fromUid);
             }
         }
 
@@ -1003,8 +1009,8 @@
                                     reg.showNotification("Nueva solicitud", {
                                         body: d.fromName + " quiere ser tu contacto",
                                         icon: "icon-192.svg", tag: "request-" + change.doc.id
-                                    });
-                                }).catch(() => {});
+                                    }).catch(e => log("Req notif error: " + e.message, 'error'));
+                                }).catch(e => log("SW ready error: " + e.message, 'error'));
                             }
                         }
                     }
@@ -1071,13 +1077,12 @@
 
         function listenBuzzes(user) {
             const q = query(collection(db, "buzzes"), where("toUid", "==", user.uid));
-            let start = Date.now();
             unsubs.buzzes = onSnapshot(q, (snap) => {
                 snap.docChanges().forEach(change => {
-                    if (change.type === "added") {
+                    if (change.type === "added" && !knownBuzzIds.has(change.doc.id)) {
+                        knownBuzzIds.add(change.doc.id);
                         const d = change.doc.data();
-                        const t = d.timestamp ? d.timestamp.toMillis() : Date.now();
-                        if (t > start - 10000 && d.deviceId !== sessionDeviceId) {
+                        if (d.deviceId !== sessionDeviceId) {
                             handleBuzzArrival({ from: d.from, fromUid: d.fromUid || '', groupName: d.groupName, soundType: d.soundType, soundData: d.soundData, soundName: d.soundName });
                         }
                     }
@@ -1825,7 +1830,10 @@
         // BROWSER NOTIFICATION
         // ============================================================
         function showBrowserNotification(from, fromUid) {
-            if (!("Notification" in window) || Notification.permission !== "granted") return;
+            if (!("Notification" in window) || Notification.permission !== "granted") {
+                log("Notificación omitida: permiso " + Notification.permission, 'warn');
+                return;
+            }
             try {
                 navigator.serviceWorker.ready.then(reg => {
                     reg.showNotification("¡ZUMBIDO!", {
@@ -1838,10 +1846,11 @@
                             { action: 'reply', title: '🔔 Responder' },
                             { action: 'open', title: 'Abrir' }
                         ]
-                    });
-                });
+                    }).catch(e => log("showNotification error: " + e.message, 'error'));
+                }).catch(e => log("SW ready error: " + e.message, 'error'));
             } catch (e) {
-                new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" });
+                try { new Notification("¡ZUMBIDO!", { body: from + " te ha enviado un zumbido", icon: "icon-192.svg" }); }
+                catch (e2) { log("new Notification error: " + e2.message, 'error'); }
             }
         }
 
@@ -1898,10 +1907,6 @@
                     .then(() => log("SW registrado", 'success'))
                     .catch(err => log("SW error: " + err.message, 'error'));
             });
-        }
-
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
         }
 
         // ============================================================
