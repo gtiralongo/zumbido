@@ -529,7 +529,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit, orderBy, increment, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, deleteDoc, updateDoc, getDocs, serverTimestamp, query, where, onSnapshot, limit, orderBy, increment, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-messaging.js";
 
         const firebaseConfig = {
@@ -1149,13 +1149,16 @@
                     const el = document.createElement('div');
                     el.className = 'item';
                     const mc = (d.memberIds || []).length;
+                    const isCreator = d.createdBy === user.uid;
                     el.innerHTML = `
                         <span style="font-size:1.2rem">👥</span>
                         <span class="name">${esc(d.name)}</span>
                         <span class="badge-label badge-group">${mc}</span>
                         <div class="item-actions">
-                            <button class="btn-sm btn-outline" data-action="members" data-gid="${ds.id}">👤</button>
+                            <button class="btn-sm btn-outline" data-action="members" data-gid="${ds.id}" title="Miembros">👤</button>
                             <button class="buzz-btn" title="Zumbar al grupo" data-action="buzz" data-gid="${ds.id}" data-name="${esc(d.name)}">🔔</button>
+                            ${isCreator ? `<button class="btn-sm btn-outline" data-action="edit" data-gid="${ds.id}" title="Editar grupo">✏️</button>
+                            <button class="btn-sm btn-outline" data-action="delete" data-gid="${ds.id}" data-name="${esc(d.name)}" title="Eliminar grupo" style="color:var(--danger)">🗑️</button>` : ''}
                         </div>
                     `;
                     el.querySelector('[data-action="buzz"]').onclick = (e) => {
@@ -1164,6 +1167,15 @@
                     };
                     el.querySelector('[data-action="members"]').onclick = (e) => {
                         showGroupMembers(e.currentTarget.dataset.gid);
+                    };
+                    const editBtn = el.querySelector('[data-action="edit"]');
+                    if (editBtn) editBtn.onclick = (e) => { showEditGroup(e.currentTarget.dataset.gid); };
+                    const delBtn = el.querySelector('[data-action="delete"]');
+                    if (delBtn) delBtn.onclick = (e) => {
+                        const b = e.currentTarget;
+                        if (confirm("¿Eliminar el grupo '" + b.dataset.name + "'? Esta acción no se puede deshacer.")) {
+                            deleteGroup(b.dataset.gid);
+                        }
                     };
                     els.groupsList.appendChild(el);
                 });
@@ -1194,6 +1206,91 @@
                 });
                 showToast("Grupo '" + name + "' creado!", 'success');
             } catch (e) { showToast("Error al crear grupo", 'error'); log(e.message, 'error'); }
+        }
+
+        async function deleteGroup(gid) {
+            try {
+                await deleteDoc(doc(db, "groups", gid));
+                showToast("Grupo eliminado", 'info');
+            } catch (e) { showToast("Error al eliminar grupo", 'error'); log(e.message, 'error'); }
+        }
+
+        function showEditGroup(gid) {
+            const group = myGroups.get(gid);
+            if (!group) return;
+            const user = auth.currentUser;
+            if (!user) return;
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.innerHTML = `
+                <div class="modal">
+                    <h3>Editar Grupo</h3>
+                    <input id="edit-group-name" type="text" value="${esc(group.name)}" autocomplete="off">
+                    <div style="font-size:0.8rem;color:var(--text-secondary);margin:0.5rem 0">Miembros:</div>
+                    <div class="member-list" id="edit-group-member-list">
+                        <p class="empty-msg" style="padding:0.5rem 0">Cargando...</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-outline" id="cancel-edit-group">Cancelar</button>
+                        <button class="btn btn-primary" id="save-edit-group">Guardar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const memberList = overlay.querySelector('#edit-group-member-list');
+            const checkboxes = [];
+            const currentMemberIds = (group.memberIds || []);
+
+            if (contactUids.size > 0) {
+                memberList.innerHTML = '';
+                contactUids.forEach(uid => {
+                    const contacts = document.querySelectorAll('#contacts-list .item');
+                    let name = '';
+                    contacts.forEach(c => {
+                        if (c.dataset.uid === uid) name = c.querySelector('.name')?.textContent || uid;
+                    });
+                    if (!name) return;
+                    const checked = currentMemberIds.includes(uid) ? ' checked' : '';
+                    const row = document.createElement('div');
+                    row.className = 'member-row';
+                    row.innerHTML = `
+                        <label>
+                            <input type="checkbox" value="${uid}"${checked}>
+                            <span>${esc(name)}</span>
+                        </label>
+                    `;
+                    memberList.appendChild(row);
+                    checkboxes.push(row.querySelector('input'));
+                });
+            }
+
+            overlay.querySelector('#cancel-edit-group').onclick = () => overlay.remove();
+            overlay.querySelector('#save-edit-group').onclick = async () => {
+                const name = overlay.querySelector('#edit-group-name').value.trim();
+                if (!name) { showToast("Ingresa un nombre para el grupo", 'error'); return; }
+                const selected = checkboxes.filter(c => c.checked).map(c => c.value);
+                const uids = [user.uid, ...selected.filter(uid => uid !== user.uid)];
+                const members = [{ uid: user.uid, displayName: user.displayName, photoURL: user.photoURL || '' }];
+                try {
+                    for (const muid of uids) {
+                        if (muid === user.uid) continue;
+                        const snap = await getDocs(query(collection(db, "users"), where("__name__", "==", muid), limit(1)));
+                        snap.forEach(ds => {
+                            const d = ds.data();
+                            members.push({ uid: ds.id, displayName: d.displayName, photoURL: d.photoURL || '' });
+                        });
+                    }
+                    await updateDoc(doc(db, "groups", gid), {
+                        name,
+                        memberIds: uids,
+                        members
+                    });
+                    showToast("Grupo actualizado", 'success');
+                } catch (e) { showToast("Error al actualizar grupo", 'error'); log(e.message, 'error'); }
+                overlay.remove();
+            };
+            overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
         }
 
         function buzzGroup(gid, gname, soundType, soundId, soundName) {
